@@ -5,6 +5,11 @@ import net.minecraft.client.gui.GuiScreen;
 
 public class MultiplayerMenu extends GuiMultiplayer {
 
+    /**
+     * This class is still being worked on!
+     * @param parentScreen
+     */
+
     public MultiplayerMenu(GuiScreen parentScreen) {
         super(parentScreen);
     }

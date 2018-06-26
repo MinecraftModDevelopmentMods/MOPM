@@ -1,12 +1,13 @@
 package zed.mopm;
 
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import zed.mopm.gui.EventMenuOpened;
+import zed.mopm.gui.events.EventMenuOpened;
 import zed.mopm.util.References;
 
 @Mod(modid = References.MODID, name = References.NAME, version = References.VERSION)
@@ -27,6 +28,6 @@ public class ModRegistry {
 
     @Mod.EventHandler
     public void ModLoader(FMLPostInitializationEvent postInit) {
-
+        EventMenuOpened.loadMenus(Minecraft.getMinecraft().currentScreen);
     }
 }
