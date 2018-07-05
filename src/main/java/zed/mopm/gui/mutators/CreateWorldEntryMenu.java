@@ -1,24 +1,20 @@
-package zed.mopm.gui;
+package zed.mopm.gui.mutators;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiCreateWorld;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.world.storage.ISaveFormat;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 import zed.mopm.api.data.IFolderPath;
-import zed.mopm.data.Directory;
-import zed.mopm.gui.buttons.FolderButton;
 import zed.mopm.gui.lists.FolderList;
+import zed.mopm.util.References;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.util.Scanner;
 
 public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath {
-    private GuiScreen parentIn;
     private DirectorySelectionMenu selectDir;
 
     private GuiButtonExt folderSelection;
@@ -31,7 +27,6 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
 
     public CreateWorldEntryMenu(GuiScreen parentScreen, FolderList folderList) {
         super(parentScreen);
-        parentIn = parentScreen;
         selectDir = new DirectorySelectionMenu(this, folderList);
 
         pathDisplay = new GuiTextField(1, Minecraft.getMinecraft().fontRenderer, 0, 163, 150, 20);
@@ -62,7 +57,6 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
-        System.out.println("BUTTON ID: " + button.id);
         switch (button.id) {
 
             case 0: {
@@ -71,15 +65,14 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
                     Field field = GuiCreateWorld.class.getDeclaredField("saveDirName");
                     field.setAccessible(true);
                     worldDirName = (String)field.get(this);
-                    System.out.println("MC DIR PATH: " + Minecraft.getMinecraft().getSaveLoader().getFile(worldDirName, "text.txt"));
+
                     File createSavePath = Minecraft.getMinecraft().getSaveLoader().getFile(worldDirName, "mopm_save.dat");
-                    createSavePath.getParentFile().mkdirs();
-                    createSavePath.setWritable(true);
-                    DataOutputStream write = new DataOutputStream(new FileOutputStream(createSavePath));
-                    write.write(this.savePath.getBytes());
-                    write.close();
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    e.printStackTrace();
+                    try (DataOutputStream write = new DataOutputStream(new FileOutputStream(createSavePath))) {
+                        createSavePath.getParentFile().mkdirs();
+                        write.write(this.savePath.getBytes());
+                    }
+                } catch (NoSuchFieldException | IllegalAccessException | IOException e) {
+                    References.LOG.info("", e);
                 }
             }
             break;
@@ -93,6 +86,13 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
             case 3: {
                 this.pathDisplay.setVisible(!this.pathDisplay.getVisible());
                 this.folderSelection.visible = !this.folderSelection.visible;
+            }
+            break;
+
+            default: {
+                /* This should never be reached!
+                 * if this is reached, there was a button with a wrong id.
+                 */
             }
             break;
         }
@@ -121,7 +121,7 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
 
     @Override
     public void setUniquePath(String path) {
-        savePath = new String(path);
+        savePath = path;
     }
 
     @Override

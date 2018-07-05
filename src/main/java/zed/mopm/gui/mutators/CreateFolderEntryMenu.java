@@ -1,4 +1,4 @@
-package zed.mopm.gui;
+package zed.mopm.gui.mutators;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -50,11 +50,8 @@ public class CreateFolderEntryMenu extends GuiScreen {
 
     @Override
     protected void actionPerformed(GuiButton button) {
-        switch (button.id) {
-            case 2: {
+        if (button.id == 2) {
                 ((IFolderMenu)parentIn).addFolder(this.folderNameInquiry.getText());
-            }
-            break;
         }
 
         this.mc.displayGuiScreen(this.parentIn);

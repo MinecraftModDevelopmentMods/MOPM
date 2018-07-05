@@ -9,6 +9,7 @@ import zed.mopm.api.data.IFolderPath;
 
 public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExtended.IGuiListEntry, IFolderPath {
     private String pathToContainingDirectory;
+    private String fileName;
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Constructors:------------------------------------------------------------------------------//
@@ -16,6 +17,7 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
 
     public WorldEntry(GuiListWorldSelection listWorldSelIn, WorldSummary worldSummaryIn, ISaveFormat saveFormat) {
         super(listWorldSelIn, worldSummaryIn, saveFormat);
+        fileName = worldSummaryIn.getFileName();
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
@@ -27,7 +29,6 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
     @Override
     public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
         super.drawEntry(slotIndex, x, y, listWidth, slotHeight, mouseX, mouseY, isSelected, partialTicks);
-        // Draw something here that you can click to change the directory of the world.
     }
 
     @Override
@@ -55,11 +56,19 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
 
     @Override
     public void setUniquePath(String path) {
-        System.out.println("Setting unique path...");
+        //Todo: to do
     }
 
     @Override
     public String getPathToDir() {
         return pathToContainingDirectory;
+    }
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Interfaces:--------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    public String getFileName() {
+        return this.fileName;
     }
 }

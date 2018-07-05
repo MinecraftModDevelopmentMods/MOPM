@@ -1,4 +1,4 @@
-package zed.mopm.gui;
+package zed.mopm.gui.mutators;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -75,6 +75,11 @@ public class DirectorySelectionMenu extends GuiScreen {
                 ((IFolderPath)parentIn).setPath(this.folderListIn.currentPath());
                 ((IFolderPath)parentIn).setUniquePath(this.folderListIn.uniquePath());
                 this.mc.displayGuiScreen(this.parentIn);
+            }
+            break;
+
+            default: {
+                // This should never be reached
             }
             break;
         }

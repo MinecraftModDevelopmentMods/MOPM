@@ -8,6 +8,9 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiUtils {
+
+    private GuiUtils() {}
+
     public static void drawVerticalGradientRect(int left, int top, int right, int bottom, int startColor, int endColor, float zLevel)
     {
         float f = (float)(startColor >> 24 & 255) / 255.0F;

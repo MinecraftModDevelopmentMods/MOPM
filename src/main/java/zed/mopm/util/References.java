@@ -8,16 +8,17 @@ import org.apache.logging.log4j.Logger;
  * - This class holds data relevant to the mod information
  */
 public class References {
+    private References() {}
+
     //-Mod Info
     //::Standard Mod information.
-    public static final String MODID = "momp";
+    public static final String MODID = "mopm";
     public static final String NAME = "More Organized Player Menus";
     public static final String VERSION = "0.0.0.1";
 
     //-Proxy
-    //::Standared Proxy information.
+    //::Standard Proxy information.
     public static final String CLIENTSIDE = "zed.mopm.ClientProxy";
-    //public static final String SERVERSIDE = "zed.bytedrive.CommonProxy";
 
     //-Misc
     //::

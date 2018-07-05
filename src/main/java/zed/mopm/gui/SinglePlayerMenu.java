@@ -5,11 +5,13 @@ import net.minecraft.client.gui.*;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import zed.mopm.api.data.IFolderMenu;
-import zed.mopm.api.data.IFolderPath;
 import zed.mopm.data.WorldEntry;
 import zed.mopm.gui.lists.FolderList;
 import zed.mopm.gui.lists.WorldList;
+import zed.mopm.gui.mutators.CreateFolderEntryMenu;
+import zed.mopm.gui.mutators.CreateWorldEntryMenu;
 import zed.mopm.util.GuiUtils;
+import zed.mopm.util.References;
 
 import java.io.IOException;
 
@@ -44,7 +46,8 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
         createFolderEntryButton = new GuiButtonExt(99, 30, 10, 15, 15, "+");
         back = new GuiButtonExt(101, 10, 10, 20, 15, "<<");
         print = new GuiButtonExt(102, 45, 10, 15, 15, "/");
-        folders = new FolderList<>(100,0, 32, 20, Minecraft.getMinecraft().mcDataDir);
+        folders = new FolderList<>(this, 100,0, 32, 20, Minecraft.getMinecraft().mcDataDir);
+        //TODO:: Potentially fix what ever issue may arise if the world list only gets refreshed once
         worldSelectionList = new WorldList(this, Minecraft.getMinecraft(), 36);
     }
 
@@ -80,7 +83,7 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
         try {
             switch (button.id) {
                 case 3: {
-                    this.mc.displayGuiScreen(new CreateWorldEntryMenu(this, this.folders.clone()));
+                    this.mc.displayGuiScreen(new CreateWorldEntryMenu(this, new FolderList(this.folders)));
                 }
                 break;
 
@@ -97,8 +100,9 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
 
                 case 102: {
                     folders.print();
-                    System.out.println("CLONED: ");
-                    folders.clone().print();
+                    //Todo:: Remove
+                    References.LOG.info("CLONED: ");
+                    new FolderList(this.folders).print();
                     this.worldSelectionList.remove();
                 }
                 break;
@@ -109,7 +113,7 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
             }
         }
         catch (IOException e) {
-            e.printStackTrace();
+            References.LOG.error("", e);
         }
     }
 
@@ -122,6 +126,9 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
                 break;
             case WORLD_LIST:
                 this.worldSelectionList.handleMouseInput();
+                break;
+            case BUTTONS:
+                //Nothing to handle here
                 break;
         }
     }
