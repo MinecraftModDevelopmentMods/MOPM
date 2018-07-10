@@ -16,6 +16,7 @@ import java.util.*;
 public class FolderList <K> extends ModifiableList {
     private GuiScreen container;
 
+    private File saveFile;
     private FolderEntry<K> base;
     private FolderEntry<K> currentDir;
     private Deque<String> currentPath = new LinkedList<>();
@@ -37,11 +38,13 @@ public class FolderList <K> extends ModifiableList {
     public FolderList(GuiScreen parentIn, int widthIn, int heightIn, int topIn, int slotHeightIn, File saveIn) {
         this(widthIn, heightIn, topIn, slotHeightIn);
         if (parentIn instanceof SinglePlayerMenu) {
-            base.load(new File(saveIn, "mopm_ssp.dat"));
+            saveFile = new File(saveIn, "mopm_ssp.dat");
         }
         else if (parentIn instanceof MultiplayerMenu) {
-            base.load(new File(saveIn, "mopm_smp.dat"));
+            saveFile = new File(saveIn, "mopm_smp.dat");
         }
+
+        base.load(saveFile);
         container = parentIn;
     }
 
@@ -300,6 +303,10 @@ public class FolderList <K> extends ModifiableList {
         catch (NullPointerException e) {
             return "base#0";
         }
+    }
+
+    public boolean save() {
+        return this.base.save(this.saveFile);
     }
 
     /**

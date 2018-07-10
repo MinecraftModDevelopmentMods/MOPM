@@ -104,6 +104,7 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
                     References.LOG.info("CLONED: ");
                     new FolderList(this.folders).print();
                     this.worldSelectionList.remove();
+                    this.folders.save();
                 }
                 break;
 
