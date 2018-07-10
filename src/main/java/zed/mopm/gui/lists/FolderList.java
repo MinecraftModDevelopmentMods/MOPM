@@ -263,10 +263,6 @@ public class FolderList <K> extends ModifiableList {
         temp.addAll(this.currentPath);
         try {
             String path = temp.poll();
-            if (path == null) {
-                throw new NullPointerException();
-            }
-
             path = path.substring(0, path.lastIndexOf('#'));
 
             while (!temp.isEmpty()) {
@@ -291,10 +287,6 @@ public class FolderList <K> extends ModifiableList {
         temp.addAll(this.currentPath);
         try {
             String path = temp.poll();
-            if (path == null) {
-                throw new NullPointerException();
-            }
-
             while (!temp.isEmpty()) {
                 path += "/" + temp.remove();
             }

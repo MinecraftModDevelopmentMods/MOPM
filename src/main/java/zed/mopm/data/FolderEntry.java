@@ -21,8 +21,8 @@ public class FolderEntry<K> {
     private String uniqueName;
 
     private List<K> entries;
-    private List<Directory> dirs;
-    private Map<String, FolderEntry<K>> folders;
+    private List<Directory> directories;
+    private Map<String, FolderEntry<K>> directoryData;
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Constructors:------------------------------------------------------------------------------//
@@ -33,8 +33,8 @@ public class FolderEntry<K> {
      * @param name
      */
     public FolderEntry(String name) {
-        folders = new HashMap<>();
-        dirs = new ArrayList<>();
+        directoryData = new HashMap<>();
+        directories = new ArrayList<>();
         entries = new ArrayList<>();
 
         this.name = name;
@@ -63,10 +63,10 @@ public class FolderEntry<K> {
         this(copyFrom.name, copyFrom.depth, copyFrom.index);
 
         this.entries = Lists.newArrayList(copyFrom.entries);
-        this.dirs = Lists.newArrayList(copyFrom.dirs);
+        this.directories = Lists.newArrayList(copyFrom.directories);
 
-        for (String key : copyFrom.folders.keySet()) {
-            this.folders.put(key, new FolderEntry(copyFrom.folders.get(key)));
+        for (String key : copyFrom.directoryData.keySet()) {
+            this.directoryData.put(key, new FolderEntry(copyFrom.directoryData.get(key)));
         }
     }
 
@@ -79,10 +79,10 @@ public class FolderEntry<K> {
      * @param name
      * @return
      */
-    public FolderEntry newFolder(String name) {
-        FolderEntry newFolder = new FolderEntry(name, depth + 1, this.folders.size());
-        folders.put(newFolder.uniqueName, newFolder);
-        dirs.add(new Directory(name, newFolder.uniqueName));
+    public FolderEntry<K> newFolder(String name) {
+        FolderEntry<K> newFolder = new FolderEntry(name, depth + 1, this.directoryData.size());
+        directoryData.put(newFolder.uniqueName, newFolder);
+        directories.add(new Directory(name, newFolder.uniqueName));
         return newFolder;
     }
 
@@ -91,7 +91,7 @@ public class FolderEntry<K> {
      * @param entry
      * @return
      */
-    public FolderEntry newEntry(K entry) {
+    public FolderEntry<K> newEntry(K entry) {
         entries.add(entry);
         return this;
     }
@@ -105,8 +105,8 @@ public class FolderEntry<K> {
      * @param index
      * @return
      */
-    public FolderEntry stepDown(int index) {
-        return folders.get(this.dirs.get(index).dirUUID());
+    public FolderEntry<K> stepDown(int index) {
+        return directoryData.get(this.directories.get(index).dirUUID());
     }
 
     /**
@@ -114,8 +114,8 @@ public class FolderEntry<K> {
      * @param name
      * @return
      */
-    public FolderEntry stepDown(String name) {
-        return folders.get(name);
+    public FolderEntry<K> stepDown(String name) {
+        return directoryData.get(name);
     }
 
     /**
@@ -124,11 +124,11 @@ public class FolderEntry<K> {
      * @return
      * @throws NoSuchElementException
      */
-    public FolderEntry folderPath(String path) {
+    public FolderEntry<K> folderPath(String path) {
         FolderEntry<K> current = this;
         for (String part : path.split("/")) {
-            if (current.folders.containsKey(part)) {
-                current = current.folders.get(part);
+            if (current.directoryData.containsKey(part)) {
+                current = current.directoryData.get(part);
             }
             else {
                 throw new NoSuchElementException();
@@ -144,12 +144,7 @@ public class FolderEntry<K> {
      * @return
      */
     public Directory getDirectory(int i) {
-        try {
-            return dirs.get(i);
-        }
-        catch (IndexOutOfBoundsException e) {
-            return null;
-        }
+        return directories.get(i);
     }
 
     /**
@@ -226,7 +221,7 @@ public class FolderEntry<K> {
      * @return Returns the number of directories contained in the called upon directory.
      */
     public int folders() {
-        return folders.size();
+        return directoryData.size();
     }
 
     /**
@@ -240,10 +235,10 @@ public class FolderEntry<K> {
      * @return Returns the total amount of directories and entries contained within the called upon directory.
      */
     public int size() {
-        return folders.size() + entries.size();
+        return directoryData.size() + entries.size();
     }
 
-    private String listDirectories(boolean showEntries) {
+    /*private String listDirectories(boolean showEntries) {
         StringBuilder str = new StringBuilder();
         StringBuilder dep = new StringBuilder();
         for (int i = 0; i < this.depth; i++) {
@@ -252,17 +247,35 @@ public class FolderEntry<K> {
 
         str.append((this.depth == 0) ? "" : "\n").append(dep).append(this.uniqueName).append(":");
 
-        for (Directory dir : this.dirs) {
-            String key = dir.dirUUID();
-            str.append(dep).append(this.folders.get(key).listDirectories(showEntries));
-            if (showEntries) {
-                for (K entry : this.folders.get(key).entries) {
-                    str.append("\n\t").append(dep).append("- ").append(entry.toString());
-                }
+        for (Directory dir : this.directories) {
+            str.append(dep).append(this.directoryData.get(dir.dirUUID()).listDirectories(showEntries));
+        }
+
+        if (showEntries) {
+            for (K entry : this.entries) {
+                str.append("\n").append(dep).append("- ").append(entry.toString());
             }
         }
 
         return str.toString();
+    }*/
+
+    private String listDirectories(boolean showEntries) {
+        StringBuilder str = new StringBuilder();
+        this.listDirectories(showEntries, "", str);
+        return str.toString();
+    }
+
+    private void listDirectories(boolean showEntries, String depth, StringBuilder str) {
+        str.append(depth).append(this.uniqueName).append(':').append('\n');
+        for (Directory dir : this.directories) {
+            this.directoryData.get(dir.dirUUID()).listDirectories(showEntries, depth + "\t", str);
+        }
+        if (showEntries) {
+            for (K entry : this.entries) {
+                str.append(depth).append("- ").append(entry.toString()).append('\n');
+            }
+        }
     }
 
     //-----------------------------------------------------------------------------//
@@ -280,17 +293,17 @@ public class FolderEntry<K> {
      * @param name The new name for the directory.
      */
     public void renameDir(int index, String name) {
-        FolderEntry temp = this.stepDown(index);
+        FolderEntry<K> temp = this.stepDown(index);
         String oldName = temp.uniqueName;
 
-        this.folders.remove(oldName);
+        this.directoryData.remove(oldName);
 
         temp.name = name;
         temp.uniqueName = name + this.uniqueName.substring(this.uniqueName.lastIndexOf('#'));
 
-        this.folders.put(temp.uniqueName, temp);
+        this.directoryData.put(temp.uniqueName, temp);
 
-        Directory tempDir = this.dirs.get(index);
+        Directory tempDir = this.directories.get(index);
         tempDir.dirName = temp.name;
         tempDir.uniqueDirName = temp.uniqueName;
 
@@ -302,7 +315,7 @@ public class FolderEntry<K> {
      * @return
      */
     public boolean removeDir(int index) {
-        return removeDir(this.dirs.get(index).uniqueDirName);
+        return removeDir(this.directories.get(index).uniqueDirName);
     }
 
     /**
@@ -322,11 +335,11 @@ public class FolderEntry<K> {
      *         Returns false if there was an issue when attempting to remove a subdirectory.
      */
     public boolean removeDir(final String dirName) {
-        if (!this.folders.containsKey(dirName)) {
+        if (!this.directoryData.containsKey(dirName)) {
             return false;
         }
 
-        final FolderEntry<K> temp = this.folders.get(dirName);
+        final FolderEntry<K> temp = this.directoryData.get(dirName);
         boolean hasEntry = temp.entries.isEmpty();
 
         if (!hasEntry) {
@@ -338,7 +351,7 @@ public class FolderEntry<K> {
             }
         }
 
-        for (final String key : temp.folders.keySet()) {
+        for (final String key : temp.directoryData.keySet()) {
             hasEntry = removeDir(key);
         }
 
@@ -360,24 +373,24 @@ public class FolderEntry<K> {
     private boolean safeRemoveDir(final String dirName) {
         final int rmvDirIndex = Integer.parseInt(dirName.substring(dirName.lastIndexOf('#') + 1));
 
-        for (int x = 0; x < this.dirs.size(); x++) {
-            String oldKey = this.dirs.get(x).uniqueDirName;
+        for (int x = 0; x < this.directories.size(); x++) {
+            String oldKey = this.directories.get(x).uniqueDirName;
             int i = Integer.parseInt(oldKey.substring(oldKey.lastIndexOf('#') + 1));
 
             if (i > rmvDirIndex) {
                 String newKey = oldKey.substring(0, oldKey.lastIndexOf('#') + 1) + (i - 1);
-                FolderEntry<K> val = folders.get(oldKey);
+                FolderEntry<K> val = directoryData.get(oldKey);
 
-                this.folders.remove(oldKey);
-                this.folders.put(newKey, val);
-                this.dirs.get(i).uniqueDirName = newKey;
+                this.directoryData.remove(oldKey);
+                this.directoryData.put(newKey, val);
+                this.directories.get(i).uniqueDirName = newKey;
                 val.uniqueName = newKey;
                 val.index--;
             }
         }
 
-        this.folders.remove(dirName);
-        this.dirs.remove(rmvDirIndex);
+        this.directoryData.remove(dirName);
+        this.directories.remove(rmvDirIndex);
 
         return true;
     }
@@ -495,10 +508,12 @@ public class FolderEntry<K> {
                 throw new IOException();
             }
 
-            FolderEntry<K> currentLoad = this;
-            String str;
+            Deque<FolderEntry<K>> loadOrder = new LinkedList<>();
+            loadOrder.add(this);
             String line;
             while ((line = reader.readLine())  != null) {
+                FolderEntry<K> top = loadOrder.peek();
+                loadOrder.add(top.newFolder(line.substring(top.depth * 2, line.lastIndexOf('#'))));
             }
         }
         catch (IOException e) {

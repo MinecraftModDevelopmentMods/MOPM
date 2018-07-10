@@ -1,6 +1,7 @@
 package zed.mopm;
 
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -17,17 +18,17 @@ public class ModRegistry {
     public static ClientProxy proxy;
 
     @Mod.EventHandler
-    public void ModPreInitilization(FMLPreInitializationEvent preInit) {
+    public void preModInit(FMLPreInitializationEvent preInit) {
 
     }
 
     @Mod.EventHandler
-    public void ModInitilization(FMLInitializationEvent init) {
-        FMLCommonHandler.instance().bus().register(new EventMenuOpened());
+    public void modInit(FMLInitializationEvent init) {
+        MinecraftForge.EVENT_BUS.register(EventMenuOpened.class);
     }
 
     @Mod.EventHandler
-    public void ModLoader(FMLPostInitializationEvent postInit) {
+    public void modLoader(FMLPostInitializationEvent postInit) {
         EventMenuOpened.loadMenus(Minecraft.getMinecraft().currentScreen);
     }
 }

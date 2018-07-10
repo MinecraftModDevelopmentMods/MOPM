@@ -9,12 +9,13 @@ import zed.mopm.gui.MultiplayerMenu;
 import zed.mopm.gui.SinglePlayerMenu;
 import zed.mopm.util.References;
 
+
 public class EventMenuOpened {
     private static SinglePlayerMenu sspMenu;
     private static MultiplayerMenu smpMenu;
 
     @SubscribeEvent
-    public void onGuiOpen(GuiOpenEvent event) {
+    public static void onGuiOpen(GuiOpenEvent event) {
         GuiScreen gui = event.getGui();
 
         References.LOG.info("GUI TYPE: " + gui);

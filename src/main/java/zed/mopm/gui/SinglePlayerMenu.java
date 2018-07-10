@@ -5,6 +5,7 @@ import net.minecraft.client.gui.*;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import zed.mopm.api.data.IFolderMenu;
+import zed.mopm.data.FolderEntry;
 import zed.mopm.data.WorldEntry;
 import zed.mopm.gui.lists.FolderList;
 import zed.mopm.gui.lists.WorldList;
@@ -99,12 +100,17 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
                 break;
 
                 case 102: {
-                    folders.print();
+                    /*folders.print();
                     //Todo:: Remove
                     References.LOG.info("CLONED: ");
                     new FolderList(this.folders).print();
                     this.worldSelectionList.remove();
-                    this.folders.save();
+                    this.folders.save();*/
+                    FolderEntry<String> test = new FolderEntry("base");
+                    test.newEntry("nova").newEntry("Ception");
+                    test.newFolder("Test 2").newEntry("TEST").newEntry("TEST2");
+                    test.newFolder("Test 3").newEntry("MEW").newEntry("TWO");
+                    References.LOG.info("TEST: \n" + test.toString());
                 }
                 break;
 
