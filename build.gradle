@@ -108,7 +108,7 @@ test {
 }
 
 def mod_file = getModFile()
-def short_version = getVersion('VERSION', mod_file)
+def short_version = "0.0.0.1" //getVersion('VERSION', mod_file)
 version = mc_version + '-' + short_version
 def display_version = short_version
 
