@@ -86,6 +86,8 @@ public class FolderList <K> extends ModifiableList {
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     /**
+     * If a directory entry is entered into, update the current directory being looked at,
+     * and add the current directory location to the path.
      *
      * @param slotIndex
      * @param isDoubleClick
@@ -101,11 +103,15 @@ public class FolderList <K> extends ModifiableList {
     }
 
     /**
+     * Handles mouse clicks.
+     * If x area was successfully clicked, delete the directory located at the cursor's coordinates.
+     * If the mouse was right clicked, open up the context menu to choose more actions.
      *
      * @param mouseX
      * @param mouseY
      * @param mouseEvent
-     * @return
+     * @return Returns true if a directory entry was successfully clicked.
+     *         Returns false otherwise.
      */
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int mouseEvent) {
@@ -120,7 +126,7 @@ public class FolderList <K> extends ModifiableList {
     }
 
     /**
-     *
+     * Draws the list.
      * @param mouseX
      * @param mouseY
      * @param partialTicks
@@ -133,9 +139,8 @@ public class FolderList <K> extends ModifiableList {
     }
 
     /**
-     *
-     * @param index
-     * @return
+     * @param index Directory location index
+     * @return Returns the list entry representation of the directory located at the index of the currently displayed directory list.
      */
     @Override
     public IGuiListEntry getListEntry(int index) {
@@ -143,8 +148,7 @@ public class FolderList <K> extends ModifiableList {
     }
 
     /**
-     *
-     * @return
+     * @return Returns the width of the directory list.
      */
     @Override
     public int getListWidth() {
@@ -152,8 +156,7 @@ public class FolderList <K> extends ModifiableList {
     }
 
     /**
-     *
-     * @return
+     * @return Gets the number of displayed directories
      */
     @Override
     protected int getSize() {
@@ -161,8 +164,7 @@ public class FolderList <K> extends ModifiableList {
     }
 
     /**
-     *
-     * @return
+     * @return Returns the x position of the scroll bar
      */
     @Override
     protected int getScrollBarX() {
@@ -184,7 +186,7 @@ public class FolderList <K> extends ModifiableList {
     }
 
     public void changeDir(int entryIndex) {
-
+        //:: Todo: add feature
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
@@ -226,7 +228,7 @@ public class FolderList <K> extends ModifiableList {
      * Adds a folder to the base directory.
      * This folder is inserted to the current directory.
      *
-     * @param name
+     * @param name The name of the new directory.
      */
     public void addFolder(String name) {
         getFolder().newFolder(name);
@@ -235,21 +237,15 @@ public class FolderList <K> extends ModifiableList {
     /**
      * returns the folder entry that is currently in focus.
      *
-     * @return
+     * @return Returns the current directory being browsed.
      */
-    public FolderEntry getFolder() {
-        Queue<String> temp = new ArrayDeque<>();
-        temp.addAll(this.currentPath);
-        try {
-            String path = temp.poll();
-            while (!temp.isEmpty()) {
-                path += "/" + temp.remove();
-            }
-            return base.folderPath(path);
-        }
-        catch (NullPointerException e) {
+    public FolderEntry<K> getFolder() {
+        String path = this.uniquePath();
+
+        if (path.equals("base#0")) {
             return base;
         }
+        return base.folderPath(this.uniquePath().substring("base#0/".length()));
     }
 
     /**
@@ -259,19 +255,18 @@ public class FolderList <K> extends ModifiableList {
      * @return returns a vanity path string.
      */
     public String currentPath() {
-        Queue<String> temp = new ArrayDeque<>();
+        Deque<String> temp = new ArrayDeque<>();
         temp.addAll(this.currentPath);
         try {
-            String path = temp.poll();
+            String path = temp.removeLast();
             path = path.substring(0, path.lastIndexOf('#'));
-
             while (!temp.isEmpty()) {
-                String append = temp.remove();
+                String append = temp.removeLast();
                 path += "/" + append.substring(0, append.lastIndexOf('#'));
             }
             return "base/" + path;
         }
-        catch (NullPointerException e) {
+        catch (NoSuchElementException e) {
             return "base";
         }
     }
@@ -283,20 +278,26 @@ public class FolderList <K> extends ModifiableList {
      * @return returns a usable, navigable path
      */
     public String uniquePath() {
-        Queue<String> temp = new ArrayDeque<>();
+        Deque<String> temp = new LinkedList<>();
         temp.addAll(this.currentPath);
         try {
-            String path = temp.poll();
+            String path = temp.removeLast();
             while (!temp.isEmpty()) {
-                path += "/" + temp.remove();
+                path += "/" + temp.removeLast();
             }
             return "base#0/" + path;
         }
-        catch (NullPointerException e) {
+        catch (NoSuchElementException e) {
             return "base#0";
         }
     }
 
+    /**
+     * Writes the directory tree to a file to persist through game sessions.
+     *
+     * @return Returns true if the directory tree was successfully saved.
+     *         Returns false if an error occurred during the saving process.
+     */
     public boolean save() {
         return this.base.save(this.saveFile);
     }

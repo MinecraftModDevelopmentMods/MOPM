@@ -28,9 +28,9 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
         BUTTONS
     }
 
-    private FolderList<WorldEntry> folders;
+    private FolderList<WorldEntry> directories;
     private WorldList worldSelectionList;
-    private SelectedList scrollList;
+    private SelectedList listFocus;
 
     private GuiButtonExt createFolderEntryButton;
     private GuiButtonExt back;
@@ -42,12 +42,12 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
 
     public SinglePlayerMenu(GuiScreen screenIn) {
         super(screenIn);
-        scrollList = WORLD_LIST;
+        listFocus = WORLD_LIST;
 
         createFolderEntryButton = new GuiButtonExt(99, 30, 10, 15, 15, "+");
         back = new GuiButtonExt(101, 10, 10, 20, 15, "<<");
         print = new GuiButtonExt(102, 45, 10, 15, 15, "/");
-        folders = new FolderList<>(this, 100,0, 32, 20, Minecraft.getMinecraft().mcDataDir);
+        directories = new FolderList<>(this, 100,0, 32, 20, Minecraft.getMinecraft().mcDataDir);
         //TODO:: Potentially fix what ever issue may arise if the world list only gets refreshed once
         worldSelectionList = new WorldList(this, Minecraft.getMinecraft(), 36);
     }
@@ -61,9 +61,9 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
         this.addButton(createFolderEntryButton);
         this.addButton(back);
         this.addButton(print);
-        this.folders.setHeight(this.height);
+        this.directories.setHeight(this.height);
 
-        worldSelectionList.setDimensions(this.width + folders.width, this.height - 100, 32, this.height - 64);
+        worldSelectionList.setDimensions(this.width + directories.width, this.height - 100, 32, this.height - 64);
 
         super.initGui();
     }
@@ -71,7 +71,7 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         worldSelectionList.drawScreen(mouseX, mouseY, partialTicks);
-        folders.drawScreen(mouseX, mouseY, partialTicks);
+        directories.drawScreen(mouseX, mouseY, partialTicks);
         GuiUtils.drawTexturedRect(0.0D, (double)(this.height - 64), (double)(this.width), (double) this.height, (double)this.zLevel + 1, 64, 64, 64, 255, 0, OPTIONS_BACKGROUND, this.mc);
 
         for (GuiButton button : this.buttonList) {
@@ -84,7 +84,7 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
         try {
             switch (button.id) {
                 case 3: {
-                    this.mc.displayGuiScreen(new CreateWorldEntryMenu(this, new FolderList(this.folders)));
+                    this.mc.displayGuiScreen(new CreateWorldEntryMenu(this, new FolderList(this.directories)));
                 }
                 break;
 
@@ -95,22 +95,23 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
                 break;
 
                 case 101: {
-                    folders.back();
+                    directories.back();
                 }
                 break;
 
                 case 102: {
-                    /*folders.print();
+                    /*directories.print();
                     //Todo:: Remove
                     References.LOG.info("CLONED: ");
-                    new FolderList(this.folders).print();
+                    new FolderList(this.directories).print();
                     this.worldSelectionList.remove();
-                    this.folders.save();*/
+                    this.directories.save();*/
                     FolderEntry<String> test = new FolderEntry("base");
                     test.newEntry("nova").newEntry("Ception");
                     test.newFolder("Test 2").newEntry("TEST").newEntry("TEST2");
                     test.newFolder("Test 3").newEntry("MEW").newEntry("TWO");
                     References.LOG.info("TEST: \n" + test.toString());
+                    this.directories.save();
                 }
                 break;
 
@@ -127,9 +128,9 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
     @Override
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
-        switch (this.scrollList) {
+        switch (this.listFocus) {
             case FOLDER_LIST:
-                this.folders.handleMouseInput();
+                this.directories.handleMouseInput();
                 break;
             case WORLD_LIST:
                 this.worldSelectionList.handleMouseInput();
@@ -143,26 +144,26 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         if (mouseY >= 32 && mouseY <= this.height - 64) {
-            if (mouseX >= 0 && mouseX <= this.folders.width) {
-                this.scrollList = FOLDER_LIST;
-                this.folders.mouseClicked(mouseX, mouseY, mouseButton);
+            if (mouseX >= 0 && mouseX <= this.directories.width) {
+                this.listFocus = FOLDER_LIST;
+                this.directories.mouseClicked(mouseX, mouseY, mouseButton);
             }
             else {
-                this.scrollList = WORLD_LIST;
+                this.listFocus = WORLD_LIST;
                 this.worldSelectionList.mouseClicked(mouseX, mouseY, mouseButton);
             }
         }
         else {
-            this.scrollList = BUTTONS;
+            this.listFocus = BUTTONS;
             super.mouseClicked(mouseX, mouseY, mouseButton);
         }
     }
 
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
-        switch (this.scrollList) {
+        switch (this.listFocus) {
             case FOLDER_LIST:
-                this.folders.mouseReleased(mouseX, mouseY, state);
+                this.directories.mouseReleased(mouseX, mouseY, state);
                 break;
             case WORLD_LIST:
                 this.worldSelectionList.mouseReleased(mouseX, mouseY, state);
@@ -176,7 +177,7 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
     @Override
     public void onResize(Minecraft mcIn, int w, int h) {
         super.onResize(mcIn, w, h);
-        folders.setHeight(h);
+        directories.setHeight(h);
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
@@ -185,10 +186,10 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
 
     @Override
     public void addFolder(String name) {
-        folders.addFolder(name);
+        directories.addFolder(name);
     }
 
-    public FolderList getFolders() {
-        return this.folders;
+    public FolderList getDirectories() {
+        return this.directories;
     }
 }

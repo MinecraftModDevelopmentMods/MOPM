@@ -75,9 +75,10 @@ public class FolderEntry<K> {
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     /**
+     * Creates a new directory in the called upon directory.
      *
-     * @param name
-     * @return
+     * @param name The name of the new directory.
+     * @return Returns the newly created directory.
      */
     public FolderEntry<K> newFolder(String name) {
         FolderEntry<K> newFolder = new FolderEntry(name, depth + 1, this.directoryData.size());
@@ -87,9 +88,10 @@ public class FolderEntry<K> {
     }
 
     /**
+     * Inserts an entry into into the called upon directory.
      *
-     * @param entry
-     * @return
+     * @param entry The entry to be added to the directory.
+     * @return Returns the directory that was called upon.
      */
     public FolderEntry<K> newEntry(K entry) {
         entries.add(entry);
@@ -101,28 +103,25 @@ public class FolderEntry<K> {
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     /**
-     *
-     * @param index
-     * @return
+     * @param index List location index
+     * @return Returns the subdirectory located at index within the called upon directory.
      */
     public FolderEntry<K> stepDown(int index) {
         return directoryData.get(this.directories.get(index).dirUUID());
     }
 
     /**
-     *
-     * @param name
-     * @return
+     * @param name The directory that is being searched for.
+     * @return Returns the subdirectory with the name 'name' within the called upon directory.
      */
     public FolderEntry<K> stepDown(String name) {
         return directoryData.get(name);
     }
 
     /**
-     *
-     * @param path
-     * @return
-     * @throws NoSuchElementException
+     * @param path The location in the directory tree to be returned.
+     * @return Returns the subdirectory defined by the end of the path.
+     * @throws NoSuchElementException Thrown if the path does not exist.
      */
     public FolderEntry<K> folderPath(String path) {
         FolderEntry<K> current = this;
@@ -148,7 +147,7 @@ public class FolderEntry<K> {
     }
 
     /**
-     *
+     * Returns the entry of the current directory located in i.
      * @param i
      * @return
      */
@@ -238,34 +237,28 @@ public class FolderEntry<K> {
         return directoryData.size() + entries.size();
     }
 
-    /*private String listDirectories(boolean showEntries) {
-        StringBuilder str = new StringBuilder();
-        StringBuilder dep = new StringBuilder();
-        for (int i = 0; i < this.depth; i++) {
-            dep.append("\t");
-        }
-
-        str.append((this.depth == 0) ? "" : "\n").append(dep).append(this.uniqueName).append(":");
-
-        for (Directory dir : this.directories) {
-            str.append(dep).append(this.directoryData.get(dir.dirUUID()).listDirectories(showEntries));
-        }
-
-        if (showEntries) {
-            for (K entry : this.entries) {
-                str.append("\n").append(dep).append("- ").append(entry.toString());
-            }
-        }
-
-        return str.toString();
-    }*/
-
+    /**
+     * Converts the called upon directory object to a String.
+     * The String will represent the branching directory structure of the object starting at the called
+     * upon directory as the root.
+     *
+     * @param showEntries True: append directories's entries to the String
+     *                    False: do not append entries to the String
+     * @return Returns the String representation of the branching directory structure.
+     */
     private String listDirectories(boolean showEntries) {
         StringBuilder str = new StringBuilder();
         this.listDirectories(showEntries, "", str);
         return str.toString();
     }
 
+    /**
+     * @see #listDirectories(boolean)
+     * @param showEntries True: append directories's entries to the String
+     *                    False: do not append entries to the String
+     * @param depth Current folder depth.
+     * @param str The String to append to.
+     */
     private void listDirectories(boolean showEntries, String depth, StringBuilder str) {
         str.append(depth).append(this.uniqueName).append(':').append('\n');
         for (Directory dir : this.directories) {
@@ -508,15 +501,27 @@ public class FolderEntry<K> {
                 throw new IOException();
             }
 
-            Deque<FolderEntry<K>> loadOrder = new LinkedList<>();
-            loadOrder.add(this);
+            Deque<FolderEntry<K>> loadOrder = new ArrayDeque<>();
+            loadOrder.push(this);
             String line;
-            while ((line = reader.readLine())  != null) {
+            while ((line = reader.readLine()) != null) {
                 FolderEntry<K> top = loadOrder.peek();
-                loadOrder.add(top.newFolder(line.substring(top.depth * 2, line.lastIndexOf('#'))));
+                int lineDepth = 0;
+                for (char c = line.charAt(lineDepth); c == '\t'; c = line.charAt(lineDepth)) {
+                    lineDepth++;
+                }
+
+                String directoryName = line.substring(lineDepth, line.lastIndexOf('#'));
+                if (top.depth >= lineDepth) {
+                    while (loadOrder.size() > lineDepth) {
+                        loadOrder.pop();
+                    }
+                    top = loadOrder.peek();
+                }
+                loadOrder.push(top.newFolder(directoryName));
             }
         }
-        catch (IOException e) {
+        catch (IOException | NoSuchElementException e) {
             hardLoad(loadFrom);
             References.LOG.error("", e);
         }
@@ -550,10 +555,7 @@ public class FolderEntry<K> {
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     /**
-     * Converts the object to a String.
-     * The String will represent the branching directory structure of the object.
-     *
-     * @return A String of the directory tree.
+     * @return A String representing the directory tree.
      */
     @Override
     public String toString() {
