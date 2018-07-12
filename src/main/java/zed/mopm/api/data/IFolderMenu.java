@@ -1,5 +1,8 @@
 package zed.mopm.api.data;
 
+import zed.mopm.gui.lists.FolderList;
+
 public interface IFolderMenu {
-    void addFolder(String name);
+    FolderList getDirectoryList();
+    void refreshDirectoryEntryList();
 }

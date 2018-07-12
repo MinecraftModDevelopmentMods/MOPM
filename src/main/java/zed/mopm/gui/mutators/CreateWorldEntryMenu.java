@@ -1,5 +1,6 @@
 package zed.mopm.gui.mutators;
 
+import jline.internal.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiCreateWorld;
@@ -20,6 +21,7 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
     private GuiButtonExt folderSelection;
     private GuiTextField pathDisplay;
     private String savePath;
+    private File mopmSaveData;
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Constructors:------------------------------------------------------------------------------//
@@ -31,6 +33,7 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
 
         pathDisplay = new GuiTextField(1, Minecraft.getMinecraft().fontRenderer, 0, 163, 150, 20);
         pathDisplay.setMaxStringLength(Integer.MAX_VALUE);
+        mopmSaveData = null;
         this.setPath(folderList.currentPath());
         this.setUniquePath(folderList.uniquePath());
     }
@@ -39,6 +42,9 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
     //-----Overridden Methods:------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
+    /**
+     *
+     */
     @Override
     public void initGui() {
         super.initGui();
@@ -49,12 +55,23 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
         this.buttonList.add(folderSelection);
     }
 
+    /**
+     *
+     * @param mouseX
+     * @param mouseY
+     * @param partialTicks
+     */
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
         this.pathDisplay.drawTextBox();
     }
 
+    /**
+     *
+     * @param button
+     * @throws IOException
+     */
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         switch (button.id) {
@@ -66,9 +83,9 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
                     field.setAccessible(true);
                     worldDirName = (String)field.get(this);
 
-                    File createSavePath = Minecraft.getMinecraft().getSaveLoader().getFile(worldDirName, "mopm_save.dat");
-                    try (DataOutputStream write = new DataOutputStream(new FileOutputStream(createSavePath))) {
-                        createSavePath.getParentFile().mkdirs();
+                    mopmSaveData = Minecraft.getMinecraft().getSaveLoader().getFile(worldDirName, "mopm_save.dat");
+                    mopmSaveData.getParentFile().mkdirs();
+                    try (DataOutputStream write = new DataOutputStream(new FileOutputStream(mopmSaveData))) {
                         write.write(this.savePath.getBytes());
                     }
                 } catch (NoSuchFieldException | IllegalAccessException | IOException e) {
@@ -100,6 +117,12 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
         super.actionPerformed(button);
     }
 
+    /**
+     *
+     * @param typedChar
+     * @param keyCode
+     * @throws IOException
+     */
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
@@ -108,25 +131,54 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
         }
     }
 
+    /**
+     *
+     * @param mouseX
+     * @param mouseY
+     * @param mouseButton
+     * @throws IOException
+     */
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         this.pathDisplay.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
+    /**
+     *
+     * @param path
+     */
     @Override
     public void setPath(String path) {
         pathDisplay.setText("Dir: " + path);
     }
 
+    /**
+     *
+     * @param path
+     */
     @Override
     public void setUniquePath(String path) {
         savePath = path;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getPathToDir() {
         return pathDisplay.getText().substring("Dir: ".length());
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    @Nullable
+    public File getMopmSaveData() {
+        return mopmSaveData;
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://

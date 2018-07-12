@@ -36,6 +36,7 @@ public class WorldList extends GuiListWorldSelection {
 
     public WorldList(GuiWorldSelection worldSelection, Minecraft clientIn, int slotHeightIn) {
         super(worldSelection, clientIn, 0, 0, 0, 0, slotHeightIn);
+        worldMenu = (SinglePlayerMenu) worldSelection;
         relevantWorlds = new ArrayList<>();
         worldEntryList = new ArrayList<>();
         refreshList();
@@ -47,7 +48,7 @@ public class WorldList extends GuiListWorldSelection {
 
     @Override
     public void refreshList() {
-        if (this.worldEntryList != null) {
+        if (this.worldEntryList != null && this.worldMenu != null) {
             ISaveFormat isaveformat = this.mc.getSaveLoader();
             List<WorldSummary> list;
 
@@ -65,6 +66,8 @@ public class WorldList extends GuiListWorldSelection {
             for (WorldSummary worldsummary : list) {
                 this.worldEntryList.add(new WorldEntry(this, worldsummary, this.mc.getSaveLoader()));
             }
+
+            worldMenu.getDirectoryList().populateDirectoryList(worldEntryList);
         }
     }
 
@@ -91,15 +94,8 @@ public class WorldList extends GuiListWorldSelection {
         return this.worldEntryList.size();
     }
 
-    public void remove() {
-        i++;
-        if (i > this.getFullSize() - 1) {
-            i = 0;
-        }
-        this.displayWorlds(this.worldEntryList);
-    }
-
     public void displayWorlds(List<WorldEntry> worlds) {
+        Collections.sort(worlds);
         relevantWorlds.clear();
         relevantWorlds.addAll(worlds);
     }

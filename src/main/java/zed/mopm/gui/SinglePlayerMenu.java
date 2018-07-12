@@ -15,6 +15,7 @@ import zed.mopm.util.GuiUtils;
 import zed.mopm.util.References;
 
 import java.io.IOException;
+import java.util.List;
 
 import static zed.mopm.gui.SinglePlayerMenu.SelectedList.BUTTONS;
 import static zed.mopm.gui.SinglePlayerMenu.SelectedList.FOLDER_LIST;
@@ -63,7 +64,10 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
         this.addButton(print);
         this.directories.setHeight(this.height);
 
-        worldSelectionList.setDimensions(this.width + directories.width, this.height - 100, 32, this.height - 64);
+        this.directories.save();
+        this.worldSelectionList.refreshList();
+        this.worldSelectionList.setDimensions(this.width + directories.width, this.height - 100, 32, this.height - 64);
+        this.refreshDirectoryEntryList();
 
         super.initGui();
     }
@@ -184,12 +188,12 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
     //-----This:--------------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    @Override
-    public void addFolder(String name) {
-        directories.addFolder(name);
+    public FolderList<WorldEntry> getDirectoryList() {
+        return this.directories;
     }
 
-    public FolderList getDirectories() {
-        return this.directories;
+    @Override
+    public void refreshDirectoryEntryList() {
+        this.worldSelectionList.displayWorlds(this.directories.getFolder().getEntries());
     }
 }

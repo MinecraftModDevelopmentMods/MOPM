@@ -6,10 +6,18 @@ import net.minecraft.client.gui.GuiListWorldSelectionEntry;
 import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.WorldSummary;
 import zed.mopm.api.data.IFolderPath;
+import zed.mopm.util.References;
 
-public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExtended.IGuiListEntry, IFolderPath {
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExtended.IGuiListEntry, IFolderPath, Comparable<WorldEntry> {
+    private WorldSummary summary;
     private String pathToContainingDirectory;
     private String fileName;
+    private File mopmSaveData;
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Constructors:------------------------------------------------------------------------------//
@@ -17,7 +25,16 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
 
     public WorldEntry(GuiListWorldSelection listWorldSelIn, WorldSummary worldSummaryIn, ISaveFormat saveFormat) {
         super(listWorldSelIn, worldSummaryIn, saveFormat);
+        summary = worldSummaryIn;
         fileName = worldSummaryIn.getFileName();
+        mopmSaveData = saveFormat.getFile(fileName, "mopm_save.dat");
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(mopmSaveData))) {
+            pathToContainingDirectory = reader.readLine();
+        }
+        catch (IOException e) {
+            References.LOG.error("", e);
+        }
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
@@ -51,17 +68,22 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
 
     @Override
     public void setPath(String path) {
-        pathToContainingDirectory = path;
+        // Not in use
     }
 
     @Override
     public void setUniquePath(String path) {
-        //Todo: to do
+        // Not in use
     }
 
     @Override
     public String getPathToDir() {
         return pathToContainingDirectory;
+    }
+
+    @Override
+    public File getMopmSaveData() {
+        return this.mopmSaveData;
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
@@ -70,5 +92,20 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
 
     public String getFileName() {
         return this.fileName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return !(o instanceof WorldEntry) ? false : mopmSaveData.getAbsolutePath().equals(((WorldEntry) o).mopmSaveData.getAbsolutePath());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.summary.hashCode();
+    }
+
+    @Override
+    public int compareTo(WorldEntry o) {
+        return this.summary.compareTo(o.summary);
     }
 }

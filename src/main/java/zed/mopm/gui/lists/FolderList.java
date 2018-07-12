@@ -2,6 +2,8 @@ package zed.mopm.gui.lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import zed.mopm.api.data.IFolderMenu;
+import zed.mopm.api.data.IFolderPath;
 import zed.mopm.data.FolderEntry;
 import zed.mopm.gui.MultiplayerMenu;
 import zed.mopm.gui.SinglePlayerMenu;
@@ -13,7 +15,7 @@ import zed.mopm.util.References;
 import java.io.File;
 import java.util.*;
 
-public class FolderList <K> extends ModifiableList {
+public class FolderList <K extends IFolderPath> extends ModifiableList {
     private GuiScreen container;
 
     private File saveFile;
@@ -99,6 +101,7 @@ public class FolderList <K> extends ModifiableList {
         if (isDoubleClick) {
             currentDir = currentDir.stepDown(slotIndex);
             currentPath.push(currentDir.getUniqueName());
+            ((IFolderMenu)container).refreshDirectoryEntryList();
         }
     }
 
@@ -221,6 +224,7 @@ public class FolderList <K> extends ModifiableList {
         if (!currentPath.isEmpty()) {
             currentPath.pop();
             currentDir = getFolder();
+            ((IFolderMenu)container).refreshDirectoryEntryList();
         }
     }
 
@@ -232,6 +236,23 @@ public class FolderList <K> extends ModifiableList {
      */
     public void addFolder(String name) {
         getFolder().newFolder(name);
+    }
+
+    public void populateDirectoryList(List<K> entries) {
+        for (K entry : entries) {
+            try {
+                String populateTo = entry.getPathToDir();
+                if (populateTo.equals("base#0")) {
+                    base.newEntry(entry);
+                }
+                else {
+                    base.folderPath(populateTo.substring("base#0/".length())).newEntry(entry);
+                }
+            }
+            catch (NoSuchElementException e) {
+                FolderEntry.writeWorldToBase(entry.getMopmSaveData());
+            }
+        }
     }
 
     /**

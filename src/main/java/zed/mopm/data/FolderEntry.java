@@ -94,6 +94,9 @@ public class FolderEntry<K> {
      * @return Returns the directory that was called upon.
      */
     public FolderEntry<K> newEntry(K entry) {
+        if (this.entries.contains(entry)) {
+            this.entries.remove(entry);
+        }
         entries.add(entry);
         return this;
     }
@@ -153,6 +156,10 @@ public class FolderEntry<K> {
      */
     public K getEntry(int i) {
         return this.entries.get(i);
+    }
+
+    public List<K> getEntries() {
+        return this.entries;
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
@@ -413,7 +420,7 @@ public class FolderEntry<K> {
      * @param worldFolder
      * @return
      */
-    private static boolean writeWorldToBase(final File worldFolder) {
+    public static boolean writeWorldToBase(final File worldFolder) {
         try (DataOutputStream write = new DataOutputStream(new FileOutputStream(worldFolder))) {
             write.write("base#0".getBytes());
         }

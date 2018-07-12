@@ -108,7 +108,7 @@ test {
 }
 
 def mod_file = getModFile()
-def short_version = "0.0.0.1" //getVersion('VERSION', mod_file)
+def short_version = "0.0.1.1" //getVersion('VERSION', mod_file)
 version = mc_version + '-' + short_version
 def display_version = short_version
 
@@ -281,7 +281,7 @@ artifacts {
     }
 }
 
-/*publishing {
+publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId project.group
@@ -319,7 +319,7 @@ artifacts {
             url secret.url
         }
     }
-}*/
+}
 
 curseforge {
     if (project.hasProperty('cf_project_id') && project.hasProperty('cf_release_type') && project.hasProperty('cf_changelog_filename') &&

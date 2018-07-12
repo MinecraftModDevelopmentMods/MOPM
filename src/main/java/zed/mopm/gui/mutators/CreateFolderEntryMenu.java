@@ -51,7 +51,7 @@ public class CreateFolderEntryMenu extends GuiScreen {
     @Override
     protected void actionPerformed(GuiButton button) {
         if (button.id == 2) {
-                ((IFolderMenu)parentIn).addFolder(this.folderNameInquiry.getText());
+                ((IFolderMenu)parentIn).getDirectoryList().addFolder(this.folderNameInquiry.getText());
         }
 
         this.mc.displayGuiScreen(this.parentIn);
