@@ -10,6 +10,7 @@ import zed.mopm.gui.SinglePlayerMenu;
 import zed.mopm.gui.mutators.EditDirectory;
 import zed.mopm.util.ColorUtils;
 import zed.mopm.util.GuiUtils;
+import zed.mopm.util.MOPMLiterals;
 import zed.mopm.util.References;
 
 import java.io.File;
@@ -40,10 +41,10 @@ public class FolderList <K extends IFolderPath> extends ModifiableList {
     public FolderList(GuiScreen parentIn, int widthIn, int heightIn, int topIn, int slotHeightIn, File saveIn) {
         this(widthIn, heightIn, topIn, slotHeightIn);
         if (parentIn instanceof SinglePlayerMenu) {
-            saveFile = new File(saveIn, "mopm_ssp.dat");
+            saveFile = new File(saveIn, MOPMLiterals.MOPM_SSP);
         }
         else if (parentIn instanceof MultiplayerMenu) {
-            saveFile = new File(saveIn, "mopm_smp.dat");
+            saveFile = new File(saveIn, MOPMLiterals.MOPM_SMP);
         }
 
         base.load(saveFile);
@@ -59,7 +60,7 @@ public class FolderList <K extends IFolderPath> extends ModifiableList {
      */
     private FolderList(int widthIn, int heightIn, int topIn, int slotHeightIn) {
         super(Minecraft.getMinecraft(), widthIn, heightIn, topIn, 0, slotHeightIn);
-        base = new FolderEntry("base");
+        base = new FolderEntry(MOPMLiterals.BASE_DIR_NAME);
         this.currentDir = base;
         this.selectedElement = currentDir.getDepth();
     }
@@ -242,11 +243,12 @@ public class FolderList <K extends IFolderPath> extends ModifiableList {
         for (K entry : entries) {
             try {
                 String populateTo = entry.getPathToDir();
-                if (populateTo.equals("base#0")) {
+                if (populateTo.equals(MOPMLiterals.BASE_DIR)) {
                     base.newEntry(entry);
                 }
                 else {
-                    base.folderPath(populateTo.substring("base#0/".length())).newEntry(entry);
+                    base.folderPath(populateTo.substring((MOPMLiterals.BASE_DIR + "/").length())).newEntry(entry);
+
                 }
             }
             catch (NoSuchElementException e) {
@@ -263,10 +265,10 @@ public class FolderList <K extends IFolderPath> extends ModifiableList {
     public FolderEntry<K> getFolder() {
         String path = this.uniquePath();
 
-        if (path.equals("base#0")) {
+        if (path.equals(MOPMLiterals.BASE_DIR)) {
             return base;
         }
-        return base.folderPath(this.uniquePath().substring("base#0/".length()));
+        return base.folderPath(this.uniquePath().substring((MOPMLiterals.BASE_DIR + "/").length()));
     }
 
     /**
@@ -285,10 +287,10 @@ public class FolderList <K extends IFolderPath> extends ModifiableList {
                 String append = temp.removeLast();
                 path += "/" + append.substring(0, append.lastIndexOf('#'));
             }
-            return "base/" + path;
+            return MOPMLiterals.BASE_DIR_NAME + "/" + path;
         }
         catch (NoSuchElementException e) {
-            return "base";
+            return MOPMLiterals.BASE_DIR_NAME;
         }
     }
 
@@ -306,10 +308,10 @@ public class FolderList <K extends IFolderPath> extends ModifiableList {
             while (!temp.isEmpty()) {
                 path += "/" + temp.removeLast();
             }
-            return "base#0/" + path;
+            return MOPMLiterals.BASE_DIR + "/" + path;
         }
         catch (NoSuchElementException e) {
-            return "base#0";
+            return MOPMLiterals.BASE_DIR;
         }
     }
 

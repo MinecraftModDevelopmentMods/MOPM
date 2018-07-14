@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiListWorldSelectionEntry;
 import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.WorldSummary;
 import zed.mopm.api.data.IFolderPath;
+import zed.mopm.util.MOPMLiterals;
 import zed.mopm.util.References;
 
 import java.io.BufferedReader;
@@ -27,7 +28,7 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
         super(listWorldSelIn, worldSummaryIn, saveFormat);
         summary = worldSummaryIn;
         fileName = worldSummaryIn.getFileName();
-        mopmSaveData = saveFormat.getFile(fileName, "mopm_save.dat");
+        mopmSaveData = saveFormat.getFile(fileName, MOPMLiterals.MOPM_SAVE);
 
         try (BufferedReader reader = new BufferedReader(new FileReader(mopmSaveData))) {
             pathToContainingDirectory = reader.readLine();

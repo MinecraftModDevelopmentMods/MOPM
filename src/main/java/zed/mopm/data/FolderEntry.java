@@ -5,6 +5,7 @@ import net.minecraft.client.AnvilConverterException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.WorldSummary;
+import zed.mopm.util.MOPMLiterals;
 import zed.mopm.util.References;
 
 import java.io.*;
@@ -405,7 +406,7 @@ public class FolderEntry<K> {
      */
     private static boolean writeWorldsToBase(final FolderEntry folder) {
         for (final WorldEntry entry : (List<WorldEntry>)folder.entries) {
-            File createSavePath = Minecraft.getMinecraft().getSaveLoader().getFile(entry.getFileName(), "mopm_save.dat");
+            File createSavePath = Minecraft.getMinecraft().getSaveLoader().getFile(entry.getFileName(), MOPMLiterals.MOPM_SAVE);
             createSavePath.getParentFile().mkdirs();
 
             if (!writeWorldToBase(createSavePath)) {
@@ -422,7 +423,7 @@ public class FolderEntry<K> {
      */
     public static boolean writeWorldToBase(final File worldFolder) {
         try (DataOutputStream write = new DataOutputStream(new FileOutputStream(worldFolder))) {
-            write.write("base#0".getBytes());
+            write.write(MOPMLiterals.BASE_DIR.getBytes());
         }
         catch (IOException e) {
             References.LOG.error(e);
@@ -440,7 +441,7 @@ public class FolderEntry<K> {
         final ISaveFormat saveLoader = mc.getSaveLoader();
 
         for (final WorldSummary summary : saveLoader.getSaveList()) {
-            if (!writeWorldToBase(saveLoader.getFile(summary.getFileName(), "mopm_save.dat"))) {
+            if (!writeWorldToBase(saveLoader.getFile(summary.getFileName(), MOPMLiterals.MOPM_SAVE))) {
                 return false;
             }
         }
@@ -454,6 +455,7 @@ public class FolderEntry<K> {
      * @return
      */
     private static boolean writeServersToBase(final FolderEntry folder) {
+        //TODO: Write this for server entries
         return true;
     }
 
@@ -480,13 +482,13 @@ public class FolderEntry<K> {
      */
     private static void hardLoad(final File loadFrom) {
         try (DataOutputStream write = new DataOutputStream(new FileOutputStream(loadFrom))) {
-            write.write("base#0:".getBytes());
+            write.write((MOPMLiterals.BASE_DIR + ":").getBytes());
 
             final String fileName = loadFrom.getName();
-            if (fileName.equals("mopm_ssp.dat")) {
+            if (fileName.equals(MOPMLiterals.MOPM_SSP)) {
                 safeWriteWorldsToBase();
             }
-            else if (fileName.equals("mopm.smp.dat")){
+            else if (fileName.equals(MOPMLiterals.MOPM_SMP)){
                 safeWriteServersToBase();
             }
             else {
@@ -504,7 +506,7 @@ public class FolderEntry<K> {
     public void softLoad(final File loadFrom) {
         try (BufferedReader reader = new BufferedReader(new FileReader(loadFrom))) {
 
-            if (!reader.readLine().equals("base#0:")){
+            if (!reader.readLine().equals(MOPMLiterals.BASE_DIR + ":")){
                 throw new IOException();
             }
 

@@ -5,7 +5,6 @@ import net.minecraft.client.gui.*;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import zed.mopm.api.data.IFolderMenu;
-import zed.mopm.data.FolderEntry;
 import zed.mopm.data.WorldEntry;
 import zed.mopm.gui.lists.FolderList;
 import zed.mopm.gui.lists.WorldList;
@@ -15,7 +14,6 @@ import zed.mopm.util.GuiUtils;
 import zed.mopm.util.References;
 
 import java.io.IOException;
-import java.util.List;
 
 import static zed.mopm.gui.SinglePlayerMenu.SelectedList.BUTTONS;
 import static zed.mopm.gui.SinglePlayerMenu.SelectedList.FOLDER_LIST;
@@ -48,8 +46,7 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
         createFolderEntryButton = new GuiButtonExt(99, 30, 10, 15, 15, "+");
         back = new GuiButtonExt(101, 10, 10, 20, 15, "<<");
         print = new GuiButtonExt(102, 45, 10, 15, 15, "/");
-        directories = new FolderList<>(this, 100,0, 32, 20, Minecraft.getMinecraft().mcDataDir);
-        //TODO:: Potentially fix what ever issue may arise if the world list only gets refreshed once
+        directories = new FolderList<>(this, 100,0, 32, 20, Minecraft.getMinecraft().gameDir);
         worldSelectionList = new WorldList(this, Minecraft.getMinecraft(), 36);
     }
 
@@ -104,17 +101,6 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
                 break;
 
                 case 102: {
-                    /*directories.print();
-                    //Todo:: Remove
-                    References.LOG.info("CLONED: ");
-                    new FolderList(this.directories).print();
-                    this.worldSelectionList.remove();
-                    this.directories.save();*/
-                    FolderEntry<String> test = new FolderEntry("base");
-                    test.newEntry("nova").newEntry("Ception");
-                    test.newFolder("Test 2").newEntry("TEST").newEntry("TEST2");
-                    test.newFolder("Test 3").newEntry("MEW").newEntry("TWO");
-                    References.LOG.info("TEST: \n" + test.toString());
                     this.directories.save();
                 }
                 break;

@@ -20,7 +20,6 @@ public class WorldList extends GuiListWorldSelection {
     private List<WorldEntry> worldEntryList;
     private List<WorldEntry> relevantWorlds;
     private SinglePlayerMenu worldMenu;
-    private int i = 0;
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Constructors:------------------------------------------------------------------------------//

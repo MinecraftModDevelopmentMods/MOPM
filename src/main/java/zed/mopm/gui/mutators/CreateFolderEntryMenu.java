@@ -58,7 +58,7 @@ public class CreateFolderEntryMenu extends GuiScreen {
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
+    protected void keyTyped(char typedChar, int keyCode) {
         if (this.folderNameInquiry.isFocused()) {
             this.folderNameInquiry.textboxKeyTyped(typedChar, keyCode);
         }

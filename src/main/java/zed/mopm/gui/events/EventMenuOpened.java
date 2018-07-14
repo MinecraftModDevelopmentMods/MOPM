@@ -11,6 +11,8 @@ import zed.mopm.util.References;
 
 
 public class EventMenuOpened {
+    private EventMenuOpened() {}
+
     private static SinglePlayerMenu sspMenu;
     private static MultiplayerMenu smpMenu;
 

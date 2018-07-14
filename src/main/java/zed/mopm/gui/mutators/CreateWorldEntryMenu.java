@@ -10,6 +10,7 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 import zed.mopm.api.data.IFolderPath;
 import zed.mopm.gui.lists.FolderList;
+import zed.mopm.util.MOPMLiterals;
 import zed.mopm.util.References;
 
 import java.io.*;
@@ -83,7 +84,7 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
                     field.setAccessible(true);
                     worldDirName = (String)field.get(this);
 
-                    mopmSaveData = Minecraft.getMinecraft().getSaveLoader().getFile(worldDirName, "mopm_save.dat");
+                    mopmSaveData = Minecraft.getMinecraft().getSaveLoader().getFile(worldDirName, MOPMLiterals.MOPM_SAVE);
                     mopmSaveData.getParentFile().mkdirs();
                     try (DataOutputStream write = new DataOutputStream(new FileOutputStream(mopmSaveData))) {
                         write.write(this.savePath.getBytes());

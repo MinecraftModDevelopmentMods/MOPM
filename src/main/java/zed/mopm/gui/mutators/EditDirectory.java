@@ -24,7 +24,6 @@ public class EditDirectory extends GuiScreen {
     private ListButton delete;
     private ListButton rename;
     private ListButton move;
-    private ListButton open;
 
     private GuiTextField changeName;
 

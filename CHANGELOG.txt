@@ -1,0 +1,5 @@
+Version 1.0.1:
+- Added MOPMLiterals class in order to to keep track of commonly used strings.
+- Reformatted versioning for the mod.
+- Fancy new build script.
+- All functionality for the single player menu should work.
