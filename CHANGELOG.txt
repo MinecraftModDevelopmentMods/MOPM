@@ -3,3 +3,6 @@ Version 1.0.1:
 - Reformatted versioning for the mod.
 - Fancy new build script.
 - All functionality for the single player menu should work.
+
+Version 1.0.2:
+- Fixed bug: Game crashes when trying to select a directory on world creation

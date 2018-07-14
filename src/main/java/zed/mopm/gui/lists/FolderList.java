@@ -102,7 +102,9 @@ public class FolderList <K extends IFolderPath> extends ModifiableList {
         if (isDoubleClick) {
             currentDir = currentDir.stepDown(slotIndex);
             currentPath.push(currentDir.getUniqueName());
-            ((IFolderMenu)container).refreshDirectoryEntryList();
+            if (!clone) {
+                ((IFolderMenu) container).refreshDirectoryEntryList();
+            }
         }
     }
 
@@ -225,7 +227,9 @@ public class FolderList <K extends IFolderPath> extends ModifiableList {
         if (!currentPath.isEmpty()) {
             currentPath.pop();
             currentDir = getFolder();
-            ((IFolderMenu)container).refreshDirectoryEntryList();
+            if (!clone) {
+                ((IFolderMenu) container).refreshDirectoryEntryList();
+            }
         }
     }
 
