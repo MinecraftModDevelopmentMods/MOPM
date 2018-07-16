@@ -129,12 +129,13 @@ public class FolderEntry<K> {
      */
     public FolderEntry<K> folderPath(String path) {
         FolderEntry<K> current = this;
-        for (String part : path.split("/")) {
-            if (current.directoryData.containsKey(part)) {
-                current = current.directoryData.get(part);
-            }
-            else {
-                throw new NoSuchElementException();
+        if (!path.isEmpty()) {
+            for (String part : path.split("/")) {
+                if (current.directoryData.containsKey(part)) {
+                    current = current.directoryData.get(part);
+                } else {
+                    throw new NoSuchElementException();
+                }
             }
         }
 
@@ -394,6 +395,20 @@ public class FolderEntry<K> {
         this.directories.remove(rmvDirIndex);
 
         return true;
+    }
+
+    /**
+     * Removes an entry from the directory list
+     * @param index the index of the entry to be removed
+     * @return Returns false if the index is out of bounds
+     *         Returns true if the entry was successfully deleted
+     */
+    public boolean removeEntry(int index) {
+        boolean ret = index >= 0 && index < this.entries.size();
+        if (ret) {
+            this.entries.remove(index);
+        }
+        return ret;
     }
 
     //:: Data writing

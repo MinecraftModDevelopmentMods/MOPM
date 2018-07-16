@@ -1,24 +1,30 @@
 package zed.mopm.data;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.gui.GuiListWorldSelection;
 import net.minecraft.client.gui.GuiListWorldSelectionEntry;
 import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.WorldSummary;
+import zed.mopm.api.data.IDrawableListEntry;
 import zed.mopm.api.data.IFolderPath;
+import zed.mopm.gui.lists.FolderList;
+import zed.mopm.gui.lists.WorldList;
 import zed.mopm.util.MOPMLiterals;
 import zed.mopm.util.References;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
-public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExtended.IGuiListEntry, IFolderPath, Comparable<WorldEntry> {
+public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExtended.IGuiListEntry, IFolderPath, IDrawableListEntry, Comparable<WorldEntry> {
     private WorldSummary summary;
+    private WorldList worldList;
     private String pathToContainingDirectory;
     private String fileName;
     private File mopmSaveData;
+
+    private int width;
+    private int x;
+    private int y;
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Constructors:------------------------------------------------------------------------------//
@@ -26,12 +32,14 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
 
     public WorldEntry(GuiListWorldSelection listWorldSelIn, WorldSummary worldSummaryIn, ISaveFormat saveFormat) {
         super(listWorldSelIn, worldSummaryIn, saveFormat);
+        worldList = (WorldList) listWorldSelIn;
         summary = worldSummaryIn;
         fileName = worldSummaryIn.getFileName();
         mopmSaveData = saveFormat.getFile(fileName, MOPMLiterals.MOPM_SAVE);
 
         try (BufferedReader reader = new BufferedReader(new FileReader(mopmSaveData))) {
             pathToContainingDirectory = reader.readLine();
+            this.ensurePathFormat();
         }
         catch (IOException e) {
             References.LOG.error("", e);
@@ -39,7 +47,37 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
-    //-----Interfaces:--------------------------------------------------------------------------------//
+    //-----This:--------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    private void ensurePathFormat() {
+        if (pathToContainingDirectory.startsWith(MOPMLiterals.BASE_DIR + "/")) {
+            this.pathToContainingDirectory = this.pathToContainingDirectory.substring((MOPMLiterals.BASE_DIR + "/").length());
+        }
+        else {
+            this.pathToContainingDirectory = "";
+        }
+    }
+
+    public String getFileName() {
+        return this.fileName;
+    }
+
+    public void rename(String name) {
+        Minecraft.getMinecraft().getSaveLoader().renameWorld(this.fileName, name);
+    }
+
+    public void deleteWorld(FolderList deleteFrom) {
+        this.deleteWorld();
+        removeWorld(deleteFrom);
+    }
+
+    public void removeWorld(FolderList removeFrom) {
+        removeFrom.getBaseFolder().folderPath(this.pathToContainingDirectory).removeEntry(this.worldList.getSelectedIndex());
+    }
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Interfaces/Overridden Methods:-------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     //:: GuiListExtended.IGuiListEntry
@@ -47,6 +85,9 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
     @Override
     public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
         super.drawEntry(slotIndex, x, y, listWidth, slotHeight, mouseX, mouseY, isSelected, partialTicks);
+        this.x = x;
+        this.y = y;
+        this.width = listWidth;
     }
 
     @Override
@@ -69,12 +110,18 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
 
     @Override
     public void setPath(String path) {
-        // Not in use
+        this.pathToContainingDirectory = path;
     }
 
     @Override
     public void setUniquePath(String path) {
-        // Not in use
+        this.pathToContainingDirectory = path;
+        try (DataOutputStream writer = new DataOutputStream(new FileOutputStream(this.mopmSaveData))) {
+            writer.write(path.getBytes());
+        }
+        catch (IOException e) {
+        }
+        this.ensurePathFormat();
     }
 
     @Override
@@ -87,13 +134,8 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
         return this.mopmSaveData;
     }
 
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
-    //-----Interfaces:--------------------------------------------------------------------------------//
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
-
-    public String getFileName() {
-        return this.fileName;
-    }
+    //:: Object
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     @Override
     public boolean equals(Object o) {
@@ -105,8 +147,29 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
         return this.summary.hashCode();
     }
 
+    //:: Comparable
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     @Override
     public int compareTo(WorldEntry o) {
         return this.summary.compareTo(o.summary);
+    }
+
+    //:: IDrawableListEntry
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    @Override
+    public int getX() {
+        return this.x;
+    }
+
+    @Override
+    public int getY() {
+        return this.y;
+    }
+
+    @Override
+    public String drawableText() {
+        return this.fileName;
     }
 }

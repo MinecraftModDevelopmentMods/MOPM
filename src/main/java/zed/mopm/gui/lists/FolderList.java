@@ -1,9 +1,11 @@
 package zed.mopm.gui.lists;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.gui.GuiScreen;
 import zed.mopm.api.data.IFolderMenu;
 import zed.mopm.api.data.IFolderPath;
+import zed.mopm.api.data.IModifiableList;
 import zed.mopm.data.FolderEntry;
 import zed.mopm.gui.MultiplayerMenu;
 import zed.mopm.gui.SinglePlayerMenu;
@@ -16,7 +18,7 @@ import zed.mopm.util.References;
 import java.io.File;
 import java.util.*;
 
-public class FolderList <K extends IFolderPath> extends ModifiableList {
+public class FolderList <K extends IFolderPath> extends GuiListExtended implements IModifiableList {
     private GuiScreen container;
 
     private File saveFile;
@@ -126,7 +128,7 @@ public class FolderList <K extends IFolderPath> extends ModifiableList {
             this.delete(this.getSlotIndexFromScreenCoords(mouseX, mouseY));
         }
         else if (mouseEvent == 1 && this.getSlotIndexFromScreenCoords(mouseX, mouseY) != -1) {
-            this.mc.displayGuiScreen(new EditDirectory(this.container, mouseX, mouseY, this));
+            this.mc.displayGuiScreen(new EditDirectory<>(this.container, mouseX, mouseY, this));
         }
         return success;
     }
@@ -180,7 +182,7 @@ public class FolderList <K extends IFolderPath> extends ModifiableList {
     //:: Object
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    //:: ModifiableList
+    //:: IModifiableList
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     public void rename(int entryIndex, String name) {
@@ -247,15 +249,10 @@ public class FolderList <K extends IFolderPath> extends ModifiableList {
         for (K entry : entries) {
             try {
                 String populateTo = entry.getPathToDir();
-                if (populateTo.equals(MOPMLiterals.BASE_DIR)) {
-                    base.newEntry(entry);
-                }
-                else {
-                    base.folderPath(populateTo.substring((MOPMLiterals.BASE_DIR + "/").length())).newEntry(entry);
-
-                }
+                base.folderPath(populateTo).newEntry(entry);
             }
             catch (NoSuchElementException e) {
+                entry.setPath(MOPMLiterals.BASE_DIR);
                 FolderEntry.writeWorldToBase(entry.getMopmSaveData());
             }
         }
@@ -273,6 +270,10 @@ public class FolderList <K extends IFolderPath> extends ModifiableList {
             return base;
         }
         return base.folderPath(this.uniquePath().substring((MOPMLiterals.BASE_DIR + "/").length()));
+    }
+
+    public final FolderEntry<K> getBaseFolder() {
+        return this.base;
     }
 
     /**
@@ -333,6 +334,6 @@ public class FolderList <K extends IFolderPath> extends ModifiableList {
      *
      */
     public void print() {
-        References.LOG.info(this.base);
+        References.LOG.info("\n" + this.base);
     }
 }

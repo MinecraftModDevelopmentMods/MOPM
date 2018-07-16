@@ -14,6 +14,7 @@ import java.io.IOException;
 
 public class DirectorySelectionMenu extends GuiScreen {
     private GuiScreen parentIn;
+    private IFolderPath applySelectionTo;
     private FolderList folderListIn;
 
     private GuiButtonExt exit;
@@ -26,8 +27,13 @@ public class DirectorySelectionMenu extends GuiScreen {
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     public DirectorySelectionMenu(GuiScreen parentIn, FolderList folderList) {
+        this(parentIn, (IFolderPath) parentIn, folderList);
+    }
+
+    public DirectorySelectionMenu(GuiScreen parentIn, IFolderPath modifyEntry, FolderList folderList) {
         this.parentIn = parentIn;
-        folderListIn = folderList;
+        this.applySelectionTo = modifyEntry;
+        this.folderListIn = folderList;
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
@@ -72,8 +78,8 @@ public class DirectorySelectionMenu extends GuiScreen {
             break;
 
             case 3: {
-                ((IFolderPath)parentIn).setPath(this.folderListIn.currentPath());
-                ((IFolderPath)parentIn).setUniquePath(this.folderListIn.uniquePath());
+                applySelectionTo.setPath(this.folderListIn.currentPath());
+                applySelectionTo.setUniquePath(this.folderListIn.uniquePath());
                 this.mc.displayGuiScreen(this.parentIn);
             }
             break;

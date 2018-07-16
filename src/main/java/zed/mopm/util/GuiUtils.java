@@ -1,11 +1,18 @@
 package zed.mopm.util;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiUtils {
 
@@ -99,5 +106,33 @@ public class GuiUtils {
                 .color(r, g, b, a)
                 .endVertex();
         tessellator.draw();
+    }
+
+    public static void drawToolTip(FontRenderer renderer, List<String> textLines, int x, int y, int width, int height) {
+
+        x += 5;
+        width += 10;
+        int zLevel = 50;
+        int baseColor = -267386864;
+        int boarderColorStart = 1347420415;
+        int boarderColorEnd = 1344798847;
+
+        drawGradientRect(x, y, x + width, y + height, baseColor, baseColor, zLevel); //Horizontal Base
+        drawGradientRect(x + 1, y - 1, x + width - 1, y + height + 1, -267386864, -267386864, zLevel); // Vertical base
+
+        drawGradientRect(x + 1, y, x + width - 1, y + 1, boarderColorStart, boarderColorEnd, zLevel); // purple boarder top
+        drawGradientRect(x + 1, y + height - 1, x + width - 1, y + height, boarderColorEnd, boarderColorStart, zLevel); // purple boarder bottom
+        drawGradientRect(x + width - 2, y + 1, x + width - 1, y + height - 1, boarderColorStart, boarderColorEnd, zLevel); // purple boarder right
+        drawGradientRect(x + 1, y + 1, x + 2, y + height - 1, boarderColorEnd, boarderColorStart, zLevel);// purple boarder left
+
+        for (int i = 0; i < textLines.size(); i++) {
+            renderer.drawStringWithShadow(textLines.get(i), (float)(x + 5), (float)(y + (height / 4) + (i * 5)), -1);
+        }
+    }
+
+    public static void drawToolTip(FontRenderer renderer, String text, int x, int y, int width, int height) {
+        List<String> toolTip = new ArrayList<>();
+        toolTip.add(text);
+        drawToolTip(renderer, toolTip, x, y, width, height);
     }
 }

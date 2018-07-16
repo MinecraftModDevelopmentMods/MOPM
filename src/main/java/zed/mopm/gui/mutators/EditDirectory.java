@@ -2,16 +2,17 @@ package zed.mopm.gui.mutators;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import zed.mopm.api.data.Editor;
-import zed.mopm.data.Directory;
-import zed.mopm.gui.buttons.ListButton;
-import zed.mopm.gui.lists.ModifiableList;
+import zed.mopm.api.data.IDrawableListEntry;
+import zed.mopm.api.data.IModifiableList;
+import zed.mopm.gui.buttons.ContextButton;
 
 import java.io.IOException;
 
-public class EditDirectory extends GuiScreen {
+public class EditDirectory<T extends GuiListExtended & IModifiableList> extends GuiScreen {
     //:: Possible entries
     /* Open
      * Rename
@@ -19,28 +20,34 @@ public class EditDirectory extends GuiScreen {
      */
     private GuiScreen parentIn;
     private int entryIndex;
-    private ModifiableList dirList;
+    private boolean canClose;
+    private T modifiableList;
 
-    private ListButton delete;
-    private ListButton rename;
-    private ListButton move;
+    private ContextButton delete;
+    private ContextButton rename;
+    private ContextButton move;
 
     private GuiTextField changeName;
 
-    public EditDirectory(GuiScreen parentIn, int mouseX, int mouseY, ModifiableList list) {
+    public EditDirectory(GuiScreen parentIn, int mouseX, int mouseY, boolean doClose, T list) {
         this.parentIn = parentIn;
-        this.dirList = list;
+        this.modifiableList = list;
         this.entryIndex = list.getSlotIndexFromScreenCoords(mouseX, mouseY);
+        this.canClose = doClose;
 
-        delete = new ListButton(Editor.DELETE, mouseX, mouseY, "Delete");
-        rename = new ListButton(Editor.RENAME, mouseX, mouseY + 10, "Rename");
-        move = new ListButton(Editor.CHANGE_DIRECTORY, mouseX, mouseY + 20, "Move");
+        delete = new ContextButton(Editor.DELETE, mouseX, mouseY, "Delete");
+        rename = new ContextButton(Editor.RENAME, mouseX, mouseY + 10, "Rename");
+        move = new ContextButton(Editor.CHANGE_DIRECTORY, mouseX, mouseY + 20, "Move");
 
-        Directory temp = (Directory) list.getListEntry(entryIndex);
+        IDrawableListEntry temp = (IDrawableListEntry) list.getListEntry(entryIndex);
         changeName = new GuiTextField(0, Minecraft.getMinecraft().fontRenderer, temp.getX(), temp.getY(), list.getListWidth(), list.getSlotHeight());
         changeName.setMaxStringLength(Integer.MAX_VALUE);
-        changeName.setText(temp.dirName());
+        changeName.setText(temp.drawableText());
         changeName.setVisible(false);
+    }
+
+    public EditDirectory(GuiScreen parentIn, int mouseX, int mouseY, T list) {
+        this(parentIn, mouseX, mouseY, true, list);
     }
 
     @Override
@@ -66,8 +73,10 @@ public class EditDirectory extends GuiScreen {
         Editor action = Editor.values()[button.id];
         switch (action) {
             case DELETE: {
-                this.dirList.delete(this.entryIndex);
-                closeGui();
+                this.modifiableList.delete(this.entryIndex);
+                if (canClose) {
+                    closeGui();
+                }
             }
             break;
 
@@ -78,7 +87,7 @@ public class EditDirectory extends GuiScreen {
             break;
 
             case CHANGE_DIRECTORY: {
-                this.dirList.changeDir(this.entryIndex);
+                this.modifiableList.changeDir(this.entryIndex);
             }
             break;
         }
@@ -91,7 +100,7 @@ public class EditDirectory extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) {
         if (keyCode == 28) {
-            this.dirList.rename(this.entryIndex, this.changeName.getText());
+            this.modifiableList.rename(this.entryIndex, this.changeName.getText());
             closeGui();
         }
         if (this.changeName.isFocused()) {
@@ -122,6 +131,17 @@ public class EditDirectory extends GuiScreen {
     @Override
     public void updateScreen() {
         this.changeName.updateCursorCounter();
+    }
+
+    /**
+     * This operation should be used if there is an external operation that should override
+     * when the context menu closes. Otherwise, gui closing will be handled by the context
+     * menu.
+     *
+     * This method sets canClose to false.
+     */
+    public void toggleClose() {
+        this.canClose = false;
     }
 
     private void closeGui() {

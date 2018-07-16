@@ -6,10 +6,15 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import zed.mopm.api.data.IDrawableListEntry;
 import zed.mopm.util.ColorUtils;
+import zed.mopm.util.GuiUtils;
 import zed.mopm.util.References;
 
-public class Directory implements GuiListExtended.IGuiListEntry {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Directory implements GuiListExtended.IGuiListEntry, IDrawableListEntry {
     protected String dirName;
     protected String uniqueDirName;
 
@@ -17,6 +22,7 @@ public class Directory implements GuiListExtended.IGuiListEntry {
     private int width;
     private int x;
     private int y;
+    private static int hoverColor = ColorUtils.getARGB(31, 58, 112, 255);
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Constructors:------------------------------------------------------------------------------//
@@ -48,19 +54,28 @@ public class Directory implements GuiListExtended.IGuiListEntry {
         int color = ColorUtils.getARGB(255, 255, 255, 255);
         FontRenderer renderer = Minecraft.getMinecraft().fontRenderer;
         String display = dirName;
+        int stringWidth = renderer.getStringWidth(display);
+        boolean isLong = stringWidth > listWidth;
 
-        if (renderer.getStringWidth(display) > listWidth) {
-            display = renderer.listFormattedStringToWidth(dirName, listWidth).get(0);
-            display = display.substring(0, display.length() - 4) + ". . .";
+        if (isLong) {
+            display = renderer.trimStringToWidth(display, listWidth - renderer.getStringWidth(" . . .") - renderer.getStringWidth("   ")) + " . . .";
         }
         renderer.drawString(display, x + 5, y + 5, color);
         int j = mouseX - x;
         int i = j < 16 ? 16 : 0;
 
         if (isSelected) {
+            GuiUtils.drawGradientRect(x + 5, y + 15, listWidth - 7, y + 16, hoverColor, hoverColor, 1);
             Minecraft.getMinecraft().getTextureManager().bindTexture(ICON_TRASH);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             Gui.drawModalRectWithCustomSizedTexture(listWidth - 20, y, 32.0F, (float)i, 16, 16, 16F, 16F);
+
+            //:: Draw tool tip for long strings
+            if (isLong) {
+                List<String> toolTip = new ArrayList<>();
+                toolTip.add(dirName);
+                GuiUtils.drawToolTip(renderer, toolTip, x + listWidth, y, stringWidth, slotHeight);
+            }
         }
     }
 
@@ -82,15 +97,23 @@ public class Directory implements GuiListExtended.IGuiListEntry {
         return this.uniqueDirName;
     }
 
-    public String dirName() {
+    @Override
+    public String drawableText() {
         return this.dirName;
     }
 
+    @Override
     public int getX() {
         return this.x;
     }
 
+    @Override
     public int getY() {
         return this.y;
     }
+
+    /*@Override
+    public String drawableText() {
+        return null;
+    }*/
 }
