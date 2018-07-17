@@ -55,7 +55,6 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList 
 
     @Override
     public void refreshList() {
-        //super.refreshList();
         if (this.worldEntryList != null && this.worldMenu != null) {
             this.worldEntryList.clear();
             ISaveFormat isaveformat = this.mc.getSaveLoader();

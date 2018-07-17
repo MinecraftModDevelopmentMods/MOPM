@@ -4,13 +4,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,7 +123,7 @@ public class GuiUtils {
         drawGradientRect(x + 1, y + 1, x + 2, y + height - 1, boarderColorEnd, boarderColorStart, zLevel);// purple boarder left
 
         for (int i = 0; i < textLines.size(); i++) {
-            renderer.drawStringWithShadow(textLines.get(i), (float)(x + 5), (float)(y + (height / 4) + (i * 5)), -1);
+            renderer.drawStringWithShadow(textLines.get(i), (float)(x + 5.0), (float)(y + (height / 4.0) + (i * 5)), -1);
         }
     }
 

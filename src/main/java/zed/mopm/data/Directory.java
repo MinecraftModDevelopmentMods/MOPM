@@ -111,9 +111,4 @@ public class Directory implements GuiListExtended.IGuiListEntry, IDrawableListEn
     public int getY() {
         return this.y;
     }
-
-    /*@Override
-    public String drawableText() {
-        return null;
-    }*/
 }

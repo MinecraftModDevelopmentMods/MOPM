@@ -99,7 +99,7 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IFolderMenu {
         }
 
         if (mouseOver != -1 && this.buttonList.get(mouseOver) instanceof ToolTipButton) {
-            ((ToolTipButton)this.buttonList.get(mouseOver)).drawHoverState(this.mc, mouseX, mouseY, partialTicks);
+            ((ToolTipButton)this.buttonList.get(mouseOver)).drawHoverState(this.mc, mouseX, mouseY);
         }
     }
 

@@ -22,7 +22,6 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
     private String fileName;
     private File mopmSaveData;
 
-    private int width;
     private int x;
     private int y;
 
@@ -87,7 +86,6 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
         super.drawEntry(slotIndex, x, y, listWidth, slotHeight, mouseX, mouseY, isSelected, partialTicks);
         this.x = x;
         this.y = y;
-        this.width = listWidth;
     }
 
     @Override
@@ -120,6 +118,7 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
             writer.write(path.getBytes());
         }
         catch (IOException e) {
+            References.LOG.error("", e);
         }
         this.ensurePathFormat();
     }
