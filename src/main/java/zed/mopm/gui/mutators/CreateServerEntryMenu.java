@@ -2,10 +2,8 @@ package zed.mopm.gui.mutators;
 
 import jline.internal.Nullable;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiCreateWorld;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.*;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 import zed.mopm.api.data.IFolderPath;
@@ -13,10 +11,14 @@ import zed.mopm.gui.lists.FolderList;
 import zed.mopm.util.MOPMLiterals;
 import zed.mopm.util.References;
 
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 
-public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath {
+public class CreateServerEntryMenu extends GuiScreenAddServer implements IFolderPath {
+    private GuiScreen parentIn;
     private DirectorySelectionMenu selectDir;
 
     private GuiButtonExt folderSelection;
@@ -28,11 +30,12 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public CreateWorldEntryMenu(GuiScreen parentScreen, FolderList folderList) {
-        super(parentScreen);
+    public CreateServerEntryMenu(GuiScreen parentScreenIn, ServerData serverDataIn, FolderList folderList) {
+        super(parentScreenIn, serverDataIn);
+        this.parentIn = parentScreenIn;
         selectDir = new DirectorySelectionMenu(this, folderList);
 
-        pathDisplay = new GuiTextField(1, Minecraft.getMinecraft().fontRenderer, 0, 163, 150, 20);
+        pathDisplay = new GuiTextField(1, Minecraft.getMinecraft().fontRenderer, 0, 30, 150, 20);
         pathDisplay.setMaxStringLength(Integer.MAX_VALUE);
         mopmSaveData = null;
         this.setPath(folderList.currentPath());
@@ -52,78 +55,38 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
         Keyboard.enableRepeatEvents(true);
 
         pathDisplay.x = this.width / 2 - 50;
-        folderSelection = new GuiButtonExt(100, this.width / 2 - 100, 163, 45, 20, "Select");
+        folderSelection = new GuiButtonExt(100, this.width / 2 - 100, 30, 45, 20, "Select");
         this.addButton(folderSelection);
     }
 
-    /**
-     *
-     * @param mouseX
-     * @param mouseY
-     * @param partialTicks
-     */
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
         this.pathDisplay.drawTextBox();
     }
 
-    /**
-     *
-     * @param button
-     * @throws IOException
-     */
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
+        References.LOG.info("TEST");
+        super.actionPerformed(button);
         switch (button.id) {
-
-            case 0: {
-                String worldDirName;
-                try {
-                    Field field = GuiCreateWorld.class.getDeclaredField("saveDirName");
-                    field.setAccessible(true);
-                    worldDirName = (String)field.get(this);
-
-                    mopmSaveData = Minecraft.getMinecraft().getSaveLoader().getFile(worldDirName, MOPMLiterals.MOPM_SAVE);
-                    mopmSaveData.getParentFile().mkdirs();
-                    try (DataOutputStream write = new DataOutputStream(new FileOutputStream(mopmSaveData))) {
-                        write.write(this.savePath.getBytes());
-                    }
-                } catch (NoSuchFieldException | IllegalAccessException | IOException e) {
-                    References.LOG.info("", e);
-                }
-            }
-            break;
-
             // 100: Select the directory the world should be stored in.
             case 100: {
                 this.mc.displayGuiScreen(this.selectDir);
             }
             break;
 
-            case 3: {
-                this.pathDisplay.setVisible(!this.pathDisplay.getVisible());
-                this.folderSelection.visible = !this.folderSelection.visible;
-            }
-            break;
-
             default: {
-                /* This should never be reached!
-                 * if this is reached, there was a button with a wrong id.
-                 */
+                this.mc.displayGuiScreen(this.parentIn);
             }
             break;
         }
 
-        super.actionPerformed(button);
+        if (button.id != 2) {
+
+        }
     }
 
-    /**
-     *
-     * @param typedChar
-     * @param keyCode
-     * @throws IOException
-     */
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
@@ -132,57 +95,37 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
         }
     }
 
-    /**
-     *
-     * @param mouseX
-     * @param mouseY
-     * @param mouseButton
-     * @throws IOException
-     */
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         this.pathDisplay.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
-    /**
-     *
-     * @param path
-     */
+    @Override
+    public void onResize(Minecraft mcIn, int w, int h) {
+        super.onResize(mcIn, w, h);
+        this.width = w;
+        this.height = h;
+    }
+
     @Override
     public void setPath(String path) {
         pathDisplay.setText("Dir: " + path);
     }
 
-    /**
-     *
-     * @param path
-     */
     @Override
     public void setUniquePath(String path) {
         savePath = path;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public String getPathToDir() {
         return pathDisplay.getText().substring("Dir: ".length());
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     @Nullable
     public File getMopmSaveData() {
         return mopmSaveData;
     }
-
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
-    //-----This:--------------------------------------------------------------------------------------//
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 }

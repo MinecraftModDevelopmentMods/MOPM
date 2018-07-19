@@ -4,13 +4,13 @@ import net.minecraft.client.AnvilConverterException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiErrorScreen;
 import net.minecraft.client.gui.GuiListWorldSelection;
-import net.minecraft.client.gui.GuiListWorldSelectionEntry;
-import net.minecraft.client.gui.GuiWorldSelection;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.WorldSummary;
-import zed.mopm.api.data.IModifiableList;
+import zed.mopm.api.gui.lists.IListType;
+import zed.mopm.api.gui.lists.IModifiableList;
 import zed.mopm.data.WorldEntry;
+import zed.mopm.gui.ModifiableMenu;
 import zed.mopm.gui.SinglePlayerMenu;
 import zed.mopm.gui.mutators.DirectorySelectionMenu;
 import zed.mopm.gui.mutators.EditDirectory;
@@ -21,26 +21,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class WorldList extends GuiListWorldSelection implements IModifiableList {
+public class WorldList extends GuiListWorldSelection implements IModifiableList, IListType<WorldEntry> {
     private List<WorldEntry> worldEntryList;
     private List<WorldEntry> relevantWorlds;
-    private SinglePlayerMenu worldMenu;
+    private ModifiableMenu<SinglePlayerMenu, WorldEntry, WorldList> worldMenu;
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public WorldList(GuiWorldSelection worldSelection, Minecraft clientIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn) {
-        super(worldSelection, clientIn, widthIn, heightIn, topIn, bottomIn, slotHeightIn);
-        worldMenu = (SinglePlayerMenu) worldSelection;
-        relevantWorlds = new ArrayList<>();
-        worldEntryList = new ArrayList<>();
-        refreshList();
-    }
-
-    public WorldList(GuiWorldSelection worldSelection, Minecraft clientIn, int slotHeightIn) {
-        super(worldSelection, clientIn, 0, 0, 0, 0, slotHeightIn);
-        worldMenu = (SinglePlayerMenu) worldSelection;
+    public WorldList(ModifiableMenu<SinglePlayerMenu, WorldEntry, WorldList> worldSelection, Minecraft clientIn, int slotHeightIn) {
+        super(worldSelection.getInvokeScreen(), clientIn, 0, 0, 0, 0, slotHeightIn);
+        worldMenu = worldSelection;
         relevantWorlds = new ArrayList<>();
         worldEntryList = new ArrayList<>();
         refreshList();
@@ -128,6 +120,14 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList 
         this.mc.displayGuiScreen(new DirectorySelectionMenu(this.worldMenu, entry, new FolderList(this.worldMenu.getDirectoryList())));
     }
 
+    @Override
+    public void display(List<WorldEntry> entries) {
+        Collections.sort(entries);
+        relevantWorlds.clear();
+        relevantWorlds.addAll(entries);
+    }
+
+
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----This:--------------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
@@ -142,11 +142,5 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList 
 
     public int getSelectedIndex() {
         return this.selectedElement;
-    }
-
-    public void displayWorlds(List<WorldEntry> worlds) {
-        Collections.sort(worlds);
-        relevantWorlds.clear();
-        relevantWorlds.addAll(worlds);
     }
 }

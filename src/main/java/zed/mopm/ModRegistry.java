@@ -19,7 +19,7 @@ public class ModRegistry {
 
     @Mod.EventHandler
     public void preModInit(FMLPreInitializationEvent preInit) {
-
+        // NOTHING TO SEE HERE
     }
 
     @Mod.EventHandler

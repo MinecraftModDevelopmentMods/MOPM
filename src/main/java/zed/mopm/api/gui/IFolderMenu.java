@@ -1,4 +1,4 @@
-package zed.mopm.api.data;
+package zed.mopm.api.gui;
 
 import zed.mopm.gui.lists.FolderList;
 

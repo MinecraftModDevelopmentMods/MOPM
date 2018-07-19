@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
-import zed.mopm.api.data.IFolderMenu;
+import zed.mopm.api.gui.IFolderMenu;
 import zed.mopm.util.ColorUtils;
 import zed.mopm.util.GuiUtils;
 

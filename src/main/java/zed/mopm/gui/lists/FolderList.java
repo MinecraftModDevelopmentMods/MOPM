@@ -3,10 +3,11 @@ package zed.mopm.gui.lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.gui.GuiScreen;
-import zed.mopm.api.data.IFolderMenu;
+import zed.mopm.api.gui.IFolderMenu;
 import zed.mopm.api.data.IFolderPath;
-import zed.mopm.api.data.IModifiableList;
+import zed.mopm.api.gui.lists.IModifiableList;
 import zed.mopm.data.FolderEntry;
+import zed.mopm.gui.ModifiableMenu;
 import zed.mopm.gui.MultiplayerMenu;
 import zed.mopm.gui.SinglePlayerMenu;
 import zed.mopm.gui.mutators.EditDirectory;
@@ -40,12 +41,12 @@ public class FolderList <K extends IFolderPath> extends GuiListExtended implemen
      * @param slotHeightIn
      * @param saveIn
      */
-    public FolderList(GuiScreen parentIn, int widthIn, int heightIn, int topIn, int slotHeightIn, File saveIn) {
+    public FolderList(ModifiableMenu parentIn, int widthIn, int heightIn, int topIn, int slotHeightIn, File saveIn) {
         this(widthIn, heightIn, topIn, slotHeightIn);
-        if (parentIn instanceof SinglePlayerMenu) {
+        if (parentIn.getInvokeScreen() instanceof SinglePlayerMenu) {
             saveFile = new File(saveIn, MOPMLiterals.MOPM_SSP);
         }
-        else if (parentIn instanceof MultiplayerMenu) {
+        else if (parentIn.getInvokeScreen() instanceof MultiplayerMenu) {
             saveFile = new File(saveIn, MOPMLiterals.MOPM_SMP);
         }
 

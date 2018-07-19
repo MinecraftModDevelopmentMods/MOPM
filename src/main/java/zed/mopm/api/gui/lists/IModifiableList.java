@@ -1,4 +1,4 @@
-package zed.mopm.api.data;
+package zed.mopm.api.gui.lists;
 
 public interface IModifiableList {
     void rename(int entryIndex, String name);

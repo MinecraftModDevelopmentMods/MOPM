@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import zed.mopm.api.data.Editor;
 import zed.mopm.api.data.IDrawableListEntry;
-import zed.mopm.api.data.IModifiableList;
+import zed.mopm.api.gui.lists.IModifiableList;
 import zed.mopm.gui.buttons.ContextButton;
 
 import java.io.IOException;
