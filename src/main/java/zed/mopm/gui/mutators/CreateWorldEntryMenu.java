@@ -28,7 +28,7 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public CreateWorldEntryMenu(GuiScreen parentScreen, FolderList folderList) {
+    public CreateWorldEntryMenu(final GuiScreen parentScreen, final FolderList folderList) {
         super(parentScreen);
         selectDir = new DirectorySelectionMenu(this, folderList);
 
@@ -63,7 +63,7 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
      * @param partialTicks
      */
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
         this.pathDisplay.drawTextBox();
     }
@@ -74,7 +74,7 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
      * @throws IOException
      */
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
+    protected void actionPerformed(final GuiButton button) throws IOException {
         switch (button.id) {
 
             case 0: {
@@ -82,7 +82,7 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
                 try {
                     Field field = GuiCreateWorld.class.getDeclaredField("saveDirName");
                     field.setAccessible(true);
-                    worldDirName = (String)field.get(this);
+                    worldDirName = (String) field.get(this);
 
                     mopmSaveData = Minecraft.getMinecraft().getSaveLoader().getFile(worldDirName, MOPMLiterals.MOPM_SAVE);
                     mopmSaveData.getParentFile().mkdirs();
@@ -125,7 +125,7 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
      * @throws IOException
      */
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
+    protected void keyTyped(final char typedChar, final int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
         if (this.pathDisplay.isFocused() && keyCode == 203 || keyCode == 205 || GuiScreen.isKeyComboCtrlA(keyCode) || GuiScreen.isKeyComboCtrlC(keyCode)) {
             this.pathDisplay.textboxKeyTyped(typedChar, keyCode);
@@ -140,7 +140,7 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
      * @throws IOException
      */
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         this.pathDisplay.mouseClicked(mouseX, mouseY, mouseButton);
     }
@@ -150,7 +150,7 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
      * @param path
      */
     @Override
-    public void setPath(String path) {
+    public void setPath(final String path) {
         pathDisplay.setText("Dir: " + path);
     }
 
@@ -159,7 +159,7 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
      * @param path
      */
     @Override
-    public void setUniquePath(String path) {
+    public void setUniquePath(final String path) {
         savePath = path;
     }
 

@@ -18,31 +18,31 @@ public class ServerList extends ServerSelectionList implements IModifiableList, 
     List<ServerEntry> relevantServers;
     private ModifiableMenu<SinglePlayerMenu, WorldEntry, WorldList> serverMenu;
 
-    public ServerList(GuiMultiplayer ownerIn, Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn) {
+    public ServerList(final GuiMultiplayer ownerIn, final Minecraft mcIn, final int widthIn, final int heightIn, final int topIn, final int bottomIn, final int slotHeightIn) {
         super(ownerIn, mcIn, widthIn, heightIn, topIn, bottomIn, slotHeightIn);
     }
 
-    public ServerList(GuiMultiplayer worldSelection, Minecraft clientIn, int slotHeightIn) {
-        super(worldSelection, clientIn, 0, 0 ,0 ,0, slotHeightIn);
+    public ServerList(final GuiMultiplayer worldSelection, final Minecraft clientIn, final int slotHeightIn) {
+        super(worldSelection, clientIn, 0, 0, 0, 0, slotHeightIn);
     }
 
     @Override
-    public void rename(int entryIndex, String name) {
+    public void rename(final int entryIndex, final String name) {
     	//
     }
 
     @Override
-    public void delete(int entryIndex) {
+    public void delete(final int entryIndex) {
     	//
     }
 
     @Override
-    public void changeDir(int entryIndex) {
+    public void changeDir(final int entryIndex) {
     	//
     }
 
     @Override
-    public void display(List<ServerEntry> entries) {
+    public void display(final List<ServerEntry> entries) {
     	//
     }
 }

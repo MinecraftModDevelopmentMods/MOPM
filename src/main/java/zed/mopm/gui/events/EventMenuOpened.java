@@ -17,7 +17,7 @@ import zed.mopm.util.References;
 
 
 public class EventMenuOpened {
-    private EventMenuOpened() {}
+    private EventMenuOpened() { }
 
     private static ModifiableMenu<SinglePlayerMenu, WorldEntry, WorldList> worldSelection;
     private static ModifiableMenu<MultiplayerMenu, ServerEntry, ServerList> serverSelection;
@@ -26,7 +26,7 @@ public class EventMenuOpened {
     private static MultiplayerMenu smpMenu;
 
     @SubscribeEvent
-    public static void onGuiOpen(GuiOpenEvent event) {
+    public static void onGuiOpen(final GuiOpenEvent event) {
         GuiScreen gui = event.getGui();
 
         if (gui instanceof GuiWorldSelection) {
@@ -34,8 +34,7 @@ public class EventMenuOpened {
             References.LOG.info("Opening the SSP menu!");
 
             event.setGui(worldSelection);
-        }
-        else if (gui instanceof GuiMultiplayer) {
+        } else if (gui instanceof GuiMultiplayer) {
             References.LOG.info("GUI TYPE: " + gui + "/n" + serverSelection);
             References.LOG.info("Opening the SMP menu!");
 
@@ -43,7 +42,7 @@ public class EventMenuOpened {
         }
     }
 
-    public static void loadMenus(GuiScreen parentIn) {
+    public static void loadMenus(final GuiScreen parentIn) {
         sspMenu = new SinglePlayerMenu(parentIn);
         smpMenu = new MultiplayerMenu(parentIn);
 

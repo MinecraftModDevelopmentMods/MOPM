@@ -1,7 +1,7 @@
 package zed.mopm.util;
 
 public class MOPMLiterals {
-    private MOPMLiterals() {}
+    private MOPMLiterals() { }
 
     public static final String BASE_DIR_NAME = "base";
     public static final String BASE_DIR = "base#0";

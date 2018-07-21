@@ -8,13 +8,13 @@ import zed.mopm.util.ColorUtils;
 public class ContextButton extends GuiButtonExt {
     Editor function;
 
-    public ContextButton(Editor e, int xPos, int yPos, String displayString) {
+    public ContextButton(final Editor e, final int xPos, final int yPos, final String displayString) {
         super(e.ordinal(), xPos, yPos, 55, 10, displayString);
         function = e;
     }
 
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partial) {
+    public void drawButton(final Minecraft mc, final int mouseX, final int mouseY, final float partial) {
         if (this.visible) {
             this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             int white = (this.hovered) ? ColorUtils.getARGB(160, 160, 160, 255) : ColorUtils.getARGB(255, 255, 255, 255);
