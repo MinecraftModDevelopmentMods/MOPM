@@ -119,10 +119,10 @@ if (System.getenv().BUILD_NUMBER) {
 
 sourceCompatibility = targetCompatibility = '1.8'
 
-/*eclipse.project {
+eclipse.project {
     buildCommand 'org.eclipse.buildship.core.gradleprojectbuilder'
     natures 'org.eclipse.buildship.core.gradleprojectnature'
-}*/
+}
 
 class Secrets {
     def data = null
