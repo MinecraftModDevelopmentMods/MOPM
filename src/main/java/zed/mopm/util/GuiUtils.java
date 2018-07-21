@@ -75,7 +75,6 @@ public final class GuiUtils {
     }
 
     public static void drawTexturedRect(final double left, final double top, final double right, final double bottom, final double z, final int r, final int g, final int b, final int a, final int tint, final ResourceLocation rl, final Minecraft mc) {
-    {
         List<Vector4d> datums = Arrays.asList(
                 new Vector4d(left,bottom,0.0D,bottom/128.0F),
                 new Vector4d(right,bottom,right/32.0F,bottom/128.0F),
