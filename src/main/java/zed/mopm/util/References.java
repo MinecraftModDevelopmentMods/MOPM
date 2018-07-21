@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
  * Created by Zedlander1001 on 2/26/2018
  * - This class holds data relevant to the mod information
  */
-public class References {
+public final class References {
     private References() {}
 
     //-Mod Info

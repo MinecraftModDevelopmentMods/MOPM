@@ -8,14 +8,10 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 import zed.mopm.api.data.IFolderPath;
 import zed.mopm.gui.lists.FolderList;
-import zed.mopm.util.MOPMLiterals;
 import zed.mopm.util.References;
 
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 
 public class CreateServerEntryMenu extends GuiScreenAddServer implements IFolderPath {
     private GuiScreen parentIn;
@@ -80,10 +76,6 @@ public class CreateServerEntryMenu extends GuiScreenAddServer implements IFolder
                 this.mc.displayGuiScreen(this.parentIn);
             }
             break;
-        }
-
-        if (button.id != 2) {
-
         }
     }
 

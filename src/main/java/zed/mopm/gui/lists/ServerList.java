@@ -42,6 +42,11 @@ public class ServerList extends ServerSelectionList implements IModifiableList, 
     }
 
     @Override
+    public void refresh() {
+
+    }
+
+    @Override
     public void display(List<ServerEntry> entries) {
 
     }

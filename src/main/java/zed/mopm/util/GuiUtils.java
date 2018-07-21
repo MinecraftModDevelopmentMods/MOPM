@@ -8,10 +8,12 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
+import javax.vecmath.Vector4d;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class GuiUtils {
+public final class GuiUtils {
 
     private GuiUtils() {}
 
@@ -25,6 +27,7 @@ public class GuiUtils {
         float f5 = (float)(endColor >> 16 & 255) / 255.0F;
         float f6 = (float)(endColor >> 8 & 255) / 255.0F;
         float f7 = (float)(endColor & 255) / 255.0F;
+
         GlStateManager.disableTexture2D();
         GlStateManager.enableBlend();
         GlStateManager.disableAlpha();
@@ -74,6 +77,11 @@ public class GuiUtils {
 
     public static void drawTexturedRect(double left, double top, double right, double bottom, double z, int r, int g, int b, int a, int tint, ResourceLocation rl, Minecraft mc)
     {
+        List<Vector4d> datums = Arrays.asList(
+                new Vector4d(left,bottom,0.0D,bottom/128.0F),
+                new Vector4d(right,bottom,right/32.0F,bottom/128.0F),
+                new Vector4d(right,top,right/32.0F,0.0D),
+                new Vector4d(left,top,0.0D,0.0D));
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
@@ -82,26 +90,12 @@ public class GuiUtils {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        bufferbuilder
-                .pos(left, bottom, z)
-                .tex(0.0D, (bottom / 128.0F + (float)tint))
+
+        datums.stream().forEach( datum -> bufferbuilder.pos(datum.getX(), datum.getY(), z)
+                .tex(datum.getZ(), tint+datum.getW())
                 .color(r, g, b, a)
-                .endVertex();
-        bufferbuilder
-                .pos(right, bottom, z)
-                .tex(right / 32.0F, (bottom / 128.0F + (float)tint))
-                .color(r, g, b, a)
-                .endVertex();
-        bufferbuilder
-                .pos(right, top, z)
-                .tex(right / 32.0F, (double)tint)
-                .color(r, g, b, a)
-                .endVertex();
-        bufferbuilder
-                .pos(left, top, z)
-                .tex(0.0D, (double)tint)
-                .color(r, g, b, a)
-                .endVertex();
+                .endVertex() );
+
         tessellator.draw();
     }
 
