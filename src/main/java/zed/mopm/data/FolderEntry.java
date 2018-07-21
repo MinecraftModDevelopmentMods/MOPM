@@ -12,8 +12,10 @@ import java.io.*;
 import java.util.*;
 
 /**
- * K can be ServerListEntryNormal
- * K can be GuiListWorldSelectionEntry
+ * K can be ServerListEntryNormal.
+ * K can be GuiListWorldSelectionEntry.
+ *
+ * @param <K>
  */
 public class FolderEntry<K> {
     private int depth;
@@ -31,36 +33,36 @@ public class FolderEntry<K> {
 
     /**
      *
-     * @param name
+     * @param nameIn
      */
-    public FolderEntry(String name) {
+    public FolderEntry(final String nameIn) {
         directoryData = new HashMap<>();
         directories = new ArrayList<>();
         entries = new ArrayList<>();
 
-        this.name = name;
-        this.uniqueName = name + "#0";
+        this.name = nameIn;
+        this.uniqueName = nameIn + "#0";
         this.depth = 0;
         this.index = 0;
     }
 
     /**
      *
-     * @param name
-     * @param depth
+     * @param nameIn
+     * @param depthIn
      */
-    private FolderEntry(String name, int depth, int index) {
-        this(name);
-        this.uniqueName = name + "#" + index;
-        this.depth = depth;
-        this.index = index;
+    private FolderEntry(final String nameIn, final int depthIn, final int indexIn) {
+        this(nameIn);
+        this.uniqueName = nameIn + "#" + index;
+        this.depth = depthIn;
+        this.index = indexIn;
     }
 
     /**
      *
      * @param copyFrom
      */
-    public FolderEntry(FolderEntry<K> copyFrom) {
+    public FolderEntry(final FolderEntry<K> copyFrom) {
         this(copyFrom.name, copyFrom.depth, copyFrom.index);
 
         this.entries = Lists.newArrayList(copyFrom.entries);
@@ -78,13 +80,13 @@ public class FolderEntry<K> {
     /**
      * Creates a new directory in the called upon directory.
      *
-     * @param name The name of the new directory.
+     * @param nameIn The name of the new directory.
      * @return Returns the newly created directory.
      */
-    public FolderEntry<K> newFolder(String name) {
-        FolderEntry<K> newFolder = new FolderEntry(name, depth + 1, this.directoryData.size());
+    public FolderEntry<K> newFolder(final String nameIn) {
+        FolderEntry<K> newFolder = new FolderEntry(nameIn, depth + 1, this.directoryData.size());
         directoryData.put(newFolder.uniqueName, newFolder);
-        directories.add(new Directory(name, newFolder.uniqueName));
+        directories.add(new Directory(nameIn, newFolder.uniqueName));
         return newFolder;
     }
 
@@ -94,7 +96,7 @@ public class FolderEntry<K> {
      * @param entry The entry to be added to the directory.
      * @return Returns the directory that was called upon.
      */
-    public FolderEntry<K> newEntry(K entry) {
+    public FolderEntry<K> newEntry(final K entry) {
         if (this.entries.contains(entry)) {
             this.entries.remove(entry);
         }
@@ -107,30 +109,30 @@ public class FolderEntry<K> {
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     /**
-     * @param index List location index
+     * @param indexIn List location index
      * @return Returns the subdirectory located at index within the called upon directory.
      */
-    public FolderEntry<K> stepDown(int index) {
-        return directoryData.get(this.directories.get(index).dirUUID());
+    public FolderEntry<K> stepDown(final int indexIn) {
+        return directoryData.get(this.directories.get(indexIn).dirUUID());
     }
 
     /**
-     * @param name The directory that is being searched for.
+     * @param nameIn The directory that is being searched for.
      * @return Returns the subdirectory with the name 'name' within the called upon directory.
      */
-    public FolderEntry<K> stepDown(String name) {
-        return directoryData.get(name);
+    public FolderEntry<K> stepDown(final String nameIn) {
+        return directoryData.get(nameIn);
     }
 
     /**
-     * @param path The location in the directory tree to be returned.
+     * @param pathIn The location in the directory tree to be returned.
      * @return Returns the subdirectory defined by the end of the path.
      * @throws NoSuchElementException Thrown if the path does not exist.
      */
-    public FolderEntry<K> folderPath(String path) {
+    public FolderEntry<K> folderPath(final String pathIn) {
         FolderEntry<K> current = this;
-        if (!path.isEmpty()) {
-            for (String part : path.split("/")) {
+        if (!pathIn.isEmpty()) {
+            for (String part : pathIn.split("/")) {
                 if (current.directoryData.containsKey(part)) {
                     current = current.directoryData.get(part);
                 } else {
@@ -147,7 +149,7 @@ public class FolderEntry<K> {
      * @param i
      * @return
      */
-    public Directory getDirectory(int i) {
+    public Directory getDirectory(final int i) {
         return directories.get(i);
     }
 
@@ -156,7 +158,7 @@ public class FolderEntry<K> {
      * @param i
      * @return
      */
-    public K getEntry(int i) {
+    public K getEntry(final int i) {
         return this.entries.get(i);
     }
 
@@ -255,7 +257,7 @@ public class FolderEntry<K> {
      *                    False: do not append entries to the String
      * @return Returns the String representation of the branching directory structure.
      */
-    private String listDirectories(boolean showEntries) {
+    private String listDirectories(final boolean showEntries) {
         StringBuilder str = new StringBuilder();
         this.listDirectories(showEntries, "", str);
         return str.toString();
@@ -265,13 +267,13 @@ public class FolderEntry<K> {
      * @see #listDirectories(boolean)
      * @param showEntries True: append directories's entries to the String
      *                    False: do not append entries to the String
-     * @param depth Current folder depth.
+     * @param depthIn Current folder depth.
      * @param str The String to append to.
      */
-    private void listDirectories(boolean showEntries, String depth, StringBuilder str) {
+    private void listDirectories(final boolean showEntries, final String depthIn, final StringBuilder str) {
         str.append(depth).append(this.uniqueName).append(':').append('\n');
         for (Directory dir : this.directories) {
-            this.directoryData.get(dir.dirUUID()).listDirectories(showEntries, depth + "\t", str);
+            this.directoryData.get(dir.dirUUID()).listDirectories(showEntries, depthIn + "\t", str);
         }
         if (showEntries) {
             for (K entry : this.entries) {
@@ -291,21 +293,21 @@ public class FolderEntry<K> {
     /**
      * Renames a directory in the called upon directory.
      *
-     * @param index The directory index that will be renamed.
-     * @param name The new name for the directory.
+     * @param indexIn The directory index that will be renamed.
+     * @param nameIn The new name for the directory.
      */
-    public void renameDir(int index, String name) {
-        FolderEntry<K> temp = this.stepDown(index);
+    public void renameDir(final int indexIn, final String nameIn) {
+        FolderEntry<K> temp = this.stepDown(indexIn);
         String oldName = temp.uniqueName;
 
         this.directoryData.remove(oldName);
 
-        temp.name = name;
-        temp.uniqueName = name + this.uniqueName.substring(this.uniqueName.lastIndexOf('#'));
+        temp.name = nameIn;
+        temp.uniqueName = nameIn + this.uniqueName.substring(this.uniqueName.lastIndexOf('#'));
 
         this.directoryData.put(temp.uniqueName, temp);
 
-        Directory tempDir = this.directories.get(index);
+        Directory tempDir = this.directories.get(indexIn);
         tempDir.dirName = temp.name;
         tempDir.uniqueDirName = temp.uniqueName;
 
@@ -313,11 +315,11 @@ public class FolderEntry<K> {
 
     /**
      * @see #removeDir(String)
-     * @param index The index used to reference what subdirectory should be removed from the called upon directory.
+     * @param indexIn The index used to reference what subdirectory should be removed from the called upon directory.
      * @return
      */
-    public boolean removeDir(int index) {
-        return removeDir(this.directories.get(index).uniqueDirName);
+    public boolean removeDir(final int indexIn) {
+        return removeDir(this.directories.get(indexIn).uniqueDirName);
     }
 
     /**
@@ -398,15 +400,15 @@ public class FolderEntry<K> {
     }
 
     /**
-     * Removes an entry from the directory list
-     * @param index the index of the entry to be removed
+     * Removes an entry from the directory list.
+     * @param indexIn the index of the entry to be removed
      * @return Returns false if the index is out of bounds
      *         Returns true if the entry was successfully deleted
      */
-    public boolean removeEntry(int index) {
-        boolean ret = index >= 0 && index < this.entries.size();
+    public boolean removeEntry(final int indexIn) {
+        boolean ret = indexIn >= 0 && indexIn < this.entries.size();
         if (ret) {
-            this.entries.remove(index);
+            this.entries.remove(indexIn);
         }
         return ret;
     }
@@ -420,7 +422,7 @@ public class FolderEntry<K> {
      * @return
      */
     private static boolean writeWorldsToBase(final FolderEntry folder) {
-        for (final WorldEntry entry : (List<WorldEntry>)folder.entries) {
+        for (final WorldEntry entry : (List<WorldEntry>) folder.entries) {
             File createSavePath = Minecraft.getMinecraft().getSaveLoader().getFile(entry.getFileName(), MOPMLiterals.MOPM_SAVE);
             createSavePath.getParentFile().mkdirs();
 
@@ -439,8 +441,7 @@ public class FolderEntry<K> {
     public static boolean writeWorldToBase(final File worldFolder) {
         try (DataOutputStream write = new DataOutputStream(new FileOutputStream(worldFolder))) {
             write.write(MOPMLiterals.BASE_DIR.getBytes());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             References.LOG.error(e);
             return false;
         }
@@ -485,8 +486,7 @@ public class FolderEntry<K> {
     public void load(final File loadFrom) {
         if (!loadFrom.isFile()) {
             hardLoad(loadFrom);
-        }
-        else {
+        } else {
             this.softLoad(loadFrom);
         }
     }
@@ -502,15 +502,12 @@ public class FolderEntry<K> {
             final String fileName = loadFrom.getName();
             if (fileName.equals(MOPMLiterals.MOPM_SSP)) {
                 safeWriteWorldsToBase();
-            }
-            else if (fileName.equals(MOPMLiterals.MOPM_SMP)){
+            } else if (fileName.equals(MOPMLiterals.MOPM_SMP)) {
                 safeWriteServersToBase();
-            }
-            else {
+            } else {
                 throw new FileNotFoundException();
             }
-        }
-        catch (IOException | AnvilConverterException e) {
+        } catch (IOException | AnvilConverterException e) {
             References.LOG.error("", e);
         }
     }
@@ -521,7 +518,7 @@ public class FolderEntry<K> {
     public void softLoad(final File loadFrom) {
         try (BufferedReader reader = new BufferedReader(new FileReader(loadFrom))) {
 
-            if (!reader.readLine().equals(MOPMLiterals.BASE_DIR + ":")){
+            if (!reader.readLine().equals(MOPMLiterals.BASE_DIR + ":")) {
                 throw new IOException();
             }
 
@@ -544,8 +541,7 @@ public class FolderEntry<K> {
                 }
                 loadOrder.push(top.newFolder(directoryName));
             }
-        }
-        catch (IOException | NoSuchElementException e) {
+        } catch (IOException | NoSuchElementException e) {
             hardLoad(loadFrom);
             References.LOG.error("", e);
         }
@@ -564,8 +560,7 @@ public class FolderEntry<K> {
 
         try (DataOutputStream writer = new DataOutputStream(new FileOutputStream(saveTo))) {
             writer.write(listDirectories(false).getBytes());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             return false;
         }
 

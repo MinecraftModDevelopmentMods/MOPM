@@ -24,7 +24,7 @@ import zed.mopm.util.References;
 
 import java.io.IOException;
 
-public final class ModifiableMenu<K extends GuiScreen & IMenuType, J extends GuiListExtended.IGuiListEntry & IFolderPath, L extends GuiListExtended & IModifiableList & IListType<J>> extends GuiScreen implements IFolderMenu {
+public class ModifiableMenu<K extends GuiScreen & IMenuType, J extends GuiListExtended.IGuiListEntry & IFolderPath, L extends GuiListExtended & IModifiableList & IListType<J>> extends GuiScreen implements IFolderMenu {
 
     private static final int CREATE_ENTRY_ID = 3;
     private static final int SUBDIR_BTN_ID = 99;
@@ -73,7 +73,7 @@ public final class ModifiableMenu<K extends GuiScreen & IMenuType, J extends Gui
         this.save = new ToolTipButton(SAVE_BTN_ID, SAVE_BTN_X, HEADER_BUTTON_Y, MOPMLiterals.SQUARE_BUTTON_DIM, MOPMLiterals.SQUARE_BUTTON_DIM, "/", "Save");
         this.hidePath = new ToolTipButton(HIDE_BTN_ID, HIDE_BTN_X, HIDE_BTN_Y, MOPMLiterals.BASE_FIVE, MOPMLiterals.BASE_FIVE, "", "Hide");
 
-        this.directories = new FolderList<>(this, DIR_LIST_WIDTH,0 , DIR_LIST_X, DIR_LIST_SLOT_HEIGHT, clientIn.gameDir);
+        this.directories = new FolderList<>(this, DIR_LIST_WIDTH, 0, DIR_LIST_X, DIR_LIST_SLOT_HEIGHT, clientIn.gameDir);
     }
 
     @Override
@@ -121,13 +121,12 @@ public final class ModifiableMenu<K extends GuiScreen & IMenuType, J extends Gui
         }
 
         if (mouseOver != -1 && this.buttonList.get(mouseOver) instanceof ToolTipButton) {
-            ((ToolTipButton)this.buttonList.get(mouseOver)).drawHoverState(this.mc, mouseX, mouseY);
+            ((ToolTipButton) this.buttonList.get(mouseOver)).drawHoverState(this.mc, mouseX, mouseY);
         }
     }
 
     @Override
     protected void actionPerformed(final GuiButton button) throws IOException {
-
         switch (button.id) {
             //:: Create new entry
             case CREATE_ENTRY_ID:
@@ -159,10 +158,9 @@ public final class ModifiableMenu<K extends GuiScreen & IMenuType, J extends Gui
 
             default:
                 if (this.invokeScreen instanceof SinglePlayerMenu) {
-                    ((SinglePlayerMenu)this.invokeScreen).actionPerformed(button, (FolderList<WorldEntry>) this.directories, (WorldList) this.entrySelectionList);
-                }
-                else if (this.entrySelectionList instanceof ServerList) {
-                    ((MultiplayerMenu)this.invokeScreen).actionPerformed(button, (FolderList<ServerEntry>) this.directories, (ServerList) this.entrySelectionList);
+                    ((SinglePlayerMenu) this.invokeScreen).actionPerformed(button, (FolderList<WorldEntry>) this.directories, (WorldList) this.entrySelectionList);
+                } else if (this.entrySelectionList instanceof ServerList) {
+                    ((MultiplayerMenu) this.invokeScreen).actionPerformed(button, (FolderList<ServerEntry>) this.directories, (ServerList) this.entrySelectionList);
                 }
                 break;
         }
@@ -174,8 +172,7 @@ public final class ModifiableMenu<K extends GuiScreen & IMenuType, J extends Gui
         final boolean navKeyPressed = keyCode == MOPMLiterals.LEFT_ARROW_KEY || keyCode == MOPMLiterals.RIGHT_ARROW_KEY || GuiScreen.isKeyComboCtrlA(keyCode) || GuiScreen.isKeyComboCtrlC(keyCode);
         if (this.directoryDisplay.isFocused() && navKeyPressed) {
             this.directoryDisplay.textboxKeyTyped(typedChar, keyCode);
-        }
-        else if (keyCode == MOPMLiterals.ESC_KEY) {
+        } else if (keyCode == MOPMLiterals.ESC_KEY) {
             super.keyTyped(typedChar, keyCode);
         }
     }
@@ -213,13 +210,11 @@ public final class ModifiableMenu<K extends GuiScreen & IMenuType, J extends Gui
             if (mouseX >= 0 && mouseX <= this.directories.width) {
                 this.listFocus = SelectedList.FOLDER_LIST;
                 this.directories.mouseClicked(mouseX, mouseY, mouseButton);
-            }
-            else {
+            } else {
                 this.listFocus = SelectedList.ENTRY_LIST;
                 this.entrySelectionList.mouseClicked(mouseX, mouseY, mouseButton);
             }
-        }
-        else {
+        } else {
             this.listFocus = SelectedList.BUTTONS;
             this.directoryDisplay.mouseClicked(mouseX, mouseY, mouseButton);
         }
@@ -281,8 +276,7 @@ public final class ModifiableMenu<K extends GuiScreen & IMenuType, J extends Gui
             ((ToolTipButton) this.hidePath).setToolTip("Unhide");
             this.directoryDisplay.width = MOPMLiterals.BASE_FIVE;
             this.directoryDisplay.setText("");
-        }
-        else {
+        } else {
             ((ToolTipButton) this.hidePath).setToolTip("Hide");
             this.directoryDisplay.width = this.width - DIR_DISPLAY_PADDING;
             this.directoryDisplay.setText(this.directories.currentPath());

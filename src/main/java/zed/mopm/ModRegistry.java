@@ -18,17 +18,17 @@ public class ModRegistry {
     public static ClientProxy proxy;
 
     @Mod.EventHandler
-    public void preModInit(FMLPreInitializationEvent preInit) {
+    public void preModInit(final FMLPreInitializationEvent preInit) {
         // NOTHING TO SEE HERE
     }
 
     @Mod.EventHandler
-    public void modInit(FMLInitializationEvent init) {
+    public void modInit(final FMLInitializationEvent init) {
         MinecraftForge.EVENT_BUS.register(EventMenuOpened.class);
     }
 
     @Mod.EventHandler
-    public void modLoader(FMLPostInitializationEvent postInit) {
+    public void modLoader(final FMLPostInitializationEvent postInit) {
         EventMenuOpened.loadMenus(Minecraft.getMinecraft().currentScreen);
     }
 

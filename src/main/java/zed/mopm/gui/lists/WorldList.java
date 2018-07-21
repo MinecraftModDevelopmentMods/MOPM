@@ -30,7 +30,7 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList,
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public WorldList(ModifiableMenu<SinglePlayerMenu, WorldEntry, WorldList> worldSelection, Minecraft clientIn, int slotHeightIn) {
+    public WorldList(final ModifiableMenu<SinglePlayerMenu, WorldEntry, WorldList> worldSelection, final Minecraft clientIn, final int slotHeightIn) {
         super(worldSelection.getInvokeScreen(), clientIn, 0, 0, 0, 0, slotHeightIn);
         worldMenu = worldSelection;
         relevantWorlds = new ArrayList<>();
@@ -54,8 +54,7 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList,
 
             try {
                 list = isaveformat.getSaveList();
-            }
-            catch (AnvilConverterException anvilconverterexception) {
+            } catch (AnvilConverterException anvilconverterexception) {
                 References.LOG.error("Couldn't load level list", anvilconverterexception);
                 this.mc.displayGuiScreen(new GuiErrorScreen(I18n.format("selectWorld.unable_to_load"), anvilconverterexception.getMessage()));
                 return;
@@ -72,12 +71,11 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList,
     }
 
     @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int mouseEvent) {
+    public boolean mouseClicked(final int mouseX, final int mouseY, final int mouseEvent) {
         if (mouseEvent == 1 && this.getSlotIndexFromScreenCoords(mouseX, mouseY) != -1) {
-            this.mc.displayGuiScreen(new EditDirectory<>(this.worldMenu, mouseX, mouseY, false,this));
+            this.mc.displayGuiScreen(new EditDirectory<>(this.worldMenu, mouseX, mouseY, false, this));
             return true;
-        }
-        else {
+        } else {
             return super.mouseClicked(mouseX, mouseY, mouseEvent);
         }
     }
@@ -89,7 +87,7 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList,
     }
 
     @Override
-    public WorldEntry getListEntry(int index) {
+    public WorldEntry getListEntry(final int index) {
         return this.relevantWorlds.get(index);
     }
 
@@ -102,18 +100,18 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList,
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     @Override
-    public void rename(int entryIndex, String name) {
+    public void rename(final int entryIndex, final String name) {
         this.getListEntry(entryIndex).rename(name);
     }
 
     @Override
-    public void delete(int entryIndex) {
+    public void delete(final int entryIndex) {
         this.selectedElement = entryIndex;
         this.getListEntry(entryIndex).deleteWorld(this.worldMenu.getDirectoryList());
     }
 
     @Override
-    public void changeDir(int entryIndex) {
+    public void changeDir(final int entryIndex) {
         this.selectedElement = entryIndex;
         WorldEntry entry = this.getListEntry(entryIndex);
         entry.removeWorld(this.worldMenu.getDirectoryList());
@@ -129,7 +127,7 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList,
     }
 
     @Override
-    public void display(List<WorldEntry> entries) {
+    public void display(final List<WorldEntry> entries) {
         Collections.sort(entries);
         relevantWorlds.clear();
         relevantWorlds.addAll(entries);
@@ -140,7 +138,7 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList,
     //-----This:--------------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public WorldEntry getFullListEntry(int index) {
+    public WorldEntry getFullListEntry(final int index) {
         return this.worldEntryList.get(index);
     }
 

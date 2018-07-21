@@ -18,7 +18,7 @@ public class Directory implements GuiListExtended.IGuiListEntry, IDrawableListEn
     protected String dirName;
     protected String uniqueDirName;
 
-    private static final ResourceLocation ICON_TRASH = new ResourceLocation(References.MODID,"textures/gui/trash_5.png");
+    private static final ResourceLocation ICON_TRASH = new ResourceLocation(References.MODID, "textures/gui/trash_5.png");
     private int width;
     private int x;
     private int y;
@@ -28,7 +28,7 @@ public class Directory implements GuiListExtended.IGuiListEntry, IDrawableListEn
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public Directory(String name, String uuid) {
+    public Directory(final String name, final String uuid) {
         this.dirName = name;
         this.uniqueDirName = uuid;
     }
@@ -41,13 +41,13 @@ public class Directory implements GuiListExtended.IGuiListEntry, IDrawableListEn
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     @Override
-    public void updatePosition(int slotIndex, int x, int y, float partialTicks) {
+    public void updatePosition(final int slotIndex, final int x, final int y, final float partialTicks) {
         //:: Does not have any functional use.
         // - This might be used to re organize folders in the future.
     }
 
     @Override
-    public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
+    public void drawEntry(final int slotIndex, final int x, final int y, final int listWidth, final int slotHeight, final int mouseX, final int mouseY, final boolean isSelected, final float partialTicks) {
         this.width = listWidth;
         this.x = x;
         this.y = y;
@@ -68,7 +68,7 @@ public class Directory implements GuiListExtended.IGuiListEntry, IDrawableListEn
             GuiUtils.drawGradientRect(x + 5, y + 15, listWidth - 7, y + 16, hoverColor, hoverColor, 1);
             Minecraft.getMinecraft().getTextureManager().bindTexture(ICON_TRASH);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            Gui.drawModalRectWithCustomSizedTexture(listWidth - 20, y, 32.0F, (float)i, 16, 16, 16F, 16F);
+            Gui.drawModalRectWithCustomSizedTexture(listWidth - 20, y, 32.0F, (float) i, 16, 16, 16F, 16F);
 
             //:: Draw tool tip for long strings
             if (isLong) {
@@ -80,12 +80,12 @@ public class Directory implements GuiListExtended.IGuiListEntry, IDrawableListEn
     }
 
     @Override
-    public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY) {
+    public boolean mousePressed(final int slotIndex, final int mouseX, final int mouseY, final int mouseEvent, final int relativeX, final int relativeY) {
         return mouseX >= this.width - 20 && mouseX <= this.width;
     }
 
     @Override
-    public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY) {
+    public void mouseReleased(final int slotIndex, final int x, final int y, final int mouseEvent, final int relativeX, final int relativeY) {
         //:: Not in use
     }
 

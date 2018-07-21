@@ -29,7 +29,7 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public WorldEntry(GuiListWorldSelection listWorldSelIn, WorldSummary worldSummaryIn, ISaveFormat saveFormat) {
+    public WorldEntry(final GuiListWorldSelection listWorldSelIn, final WorldSummary worldSummaryIn, final ISaveFormat saveFormat) {
         super(listWorldSelIn, worldSummaryIn, saveFormat);
         worldList = (WorldList) listWorldSelIn;
         summary = worldSummaryIn;
@@ -39,8 +39,7 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
         try (BufferedReader reader = new BufferedReader(new FileReader(mopmSaveData))) {
             pathToContainingDirectory = reader.readLine();
             this.ensurePathFormat();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             References.LOG.error("", e);
         }
     }
@@ -52,8 +51,7 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
     private void ensurePathFormat() {
         if (pathToContainingDirectory.startsWith(MOPMLiterals.BASE_DIR + "/")) {
             this.pathToContainingDirectory = this.pathToContainingDirectory.substring((MOPMLiterals.BASE_DIR + "/").length());
-        }
-        else {
+        } else {
             this.pathToContainingDirectory = "";
         }
     }
@@ -62,16 +60,16 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
         return this.fileName;
     }
 
-    public void rename(String name) {
+    public void rename(final String name) {
         Minecraft.getMinecraft().getSaveLoader().renameWorld(this.fileName, name);
     }
 
-    public void deleteWorld(FolderList deleteFrom) {
+    public void deleteWorld(final FolderList deleteFrom) {
         this.deleteWorld();
         removeWorld(deleteFrom);
     }
 
-    public void removeWorld(FolderList removeFrom) {
+    public void removeWorld(final FolderList removeFrom) {
         removeFrom.getBaseFolder().folderPath(this.pathToContainingDirectory).removeEntry(this.worldList.getSelectedIndex());
     }
 
@@ -82,24 +80,24 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
     //:: GuiListExtended.IGuiListEntry
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     @Override
-    public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
+    public void drawEntry(final int slotIndex, final int x, final int y, final int listWidth, final int slotHeight, final int mouseX, final int mouseY, final boolean isSelected, final float partialTicks) {
         super.drawEntry(slotIndex, x, y, listWidth, slotHeight, mouseX, mouseY, isSelected, partialTicks);
         this.x = x;
         this.y = y;
     }
 
     @Override
-    public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY) {
+    public boolean mousePressed(final int slotIndex, final int mouseX, final int mouseY, final int mouseEvent, final int relativeX, final int relativeY) {
         return super.mousePressed(slotIndex, mouseX, mouseY, mouseEvent, relativeX, relativeY);
     }
 
     @Override
-    public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY) {
+    public void mouseReleased(final int slotIndex, final int x, final int y, final int mouseEvent, final int relativeX, final int relativeY) {
         super.mouseReleased(slotIndex, x, y, mouseEvent, relativeX, relativeY);
     }
 
     @Override
-    public void updatePosition(int slotIndex, int x, int y, float partialTicks) {
+    public void updatePosition(final int slotIndex, final int x, final int y, final float partialTicks) {
         super.updatePosition(slotIndex, x, y, partialTicks);
     }
 
@@ -107,17 +105,16 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     @Override
-    public void setPath(String path) {
+    public void setPath(final String path) {
         this.pathToContainingDirectory = path;
     }
 
     @Override
-    public void setUniquePath(String path) {
+    public void setUniquePath(final String path) {
         this.pathToContainingDirectory = path;
         try (DataOutputStream writer = new DataOutputStream(new FileOutputStream(this.mopmSaveData))) {
             writer.write(path.getBytes());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             References.LOG.error("", e);
         }
         this.ensurePathFormat();
@@ -137,7 +134,7 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         return !(o instanceof WorldEntry) ? false : mopmSaveData.getAbsolutePath().equals(((WorldEntry) o).mopmSaveData.getAbsolutePath());
     }
 
@@ -150,7 +147,7 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     @Override
-    public int compareTo(WorldEntry o) {
+    public int compareTo(final WorldEntry o) {
         return this.summary.compareTo(o.summary);
     }
 

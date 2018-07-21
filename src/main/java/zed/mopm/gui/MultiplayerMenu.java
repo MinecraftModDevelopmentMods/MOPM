@@ -22,7 +22,7 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public MultiplayerMenu(GuiScreen parentScreen) {
+    public MultiplayerMenu(final GuiScreen parentScreen) {
         super(parentScreen);
         this.saveData = new ServerData(I18n.format("selectServer.defaultName"), "", false);
     }
@@ -31,24 +31,24 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
     //-----Overridden Methods:------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    protected void actionPerformed(GuiButton button, FolderList<ServerEntry> directories, ServerList selectionList) throws IOException {
+    protected void actionPerformed(final GuiButton button, final FolderList<ServerEntry> directories, final ServerList selectionList) throws IOException {
         super.actionPerformed(button);
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+    public void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) {
         //:: do nothing
         // - Override this so the wrapper gui handles all mouse input
     }
 
     @Override
-    public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
+    public void mouseReleased(final int mouseX, final int mouseY, final int mouseButton) {
         //:: do nothing
         // - Override this so the wrapper gui handles all mouse input
     }
 
     @Override
-    public void invokeEntryCreation(ModifiableMenu menu) {
+    public void invokeEntryCreation(final ModifiableMenu menu) {
         this.saveData.copyFrom(new ServerData(I18n.format("selectServer.defaultName"), "", false));
         this.mc.displayGuiScreen(new CreateServerEntryMenu(this, this.saveData, new FolderList(menu.getDirectoryList())));
     }

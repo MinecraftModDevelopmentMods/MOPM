@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface IMenuType {
     void invokeEntryCreation(ModifiableMenu menu);
+
     List<GuiButton> getButtonList();
 }

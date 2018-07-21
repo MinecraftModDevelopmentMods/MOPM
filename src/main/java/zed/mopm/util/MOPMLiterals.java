@@ -1,7 +1,7 @@
 package zed.mopm.util;
 
-public final class MOPMLiterals {
-    private MOPMLiterals() {}
+public class MOPMLiterals {
+    private MOPMLiterals() { }
 
     public static final int BASE_FIVE = 5;
     public static final int SQUARE_BUTTON_DIM = 15;

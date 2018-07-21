@@ -26,11 +26,11 @@ public class DirectorySelectionMenu extends GuiScreen {
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public DirectorySelectionMenu(GuiScreen parentIn, FolderList folderList) {
+    public DirectorySelectionMenu(final GuiScreen parentIn, final FolderList folderList) {
         this(parentIn, (IFolderPath) parentIn, folderList);
     }
 
-    public DirectorySelectionMenu(GuiScreen parentIn, IFolderPath modifyEntry, FolderList folderList) {
+    public DirectorySelectionMenu(final GuiScreen parentIn, final IFolderPath modifyEntry, final FolderList folderList) {
         this.parentIn = parentIn;
         this.applySelectionTo = modifyEntry;
         this.folderListIn = folderList;
@@ -65,7 +65,7 @@ public class DirectorySelectionMenu extends GuiScreen {
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) {
+    protected void actionPerformed(final GuiButton button) {
         switch (button.id) {
             case 1: {
                 this.mc.displayGuiScreen(this.parentIn);
@@ -92,7 +92,7 @@ public class DirectorySelectionMenu extends GuiScreen {
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) {
+    protected void keyTyped(final char typedChar, final int keyCode) {
         if (this.pathDisplay.isFocused() && keyCode == 203 || keyCode == 205 || GuiScreen.isKeyComboCtrlA(keyCode) || GuiScreen.isKeyComboCtrlC(keyCode)) {
             this.pathDisplay.textboxKeyTyped(typedChar, keyCode);
         }
@@ -105,7 +105,7 @@ public class DirectorySelectionMenu extends GuiScreen {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         this.pathDisplay.mouseClicked(mouseX, mouseY, mouseButton);
         if (!this.pathDisplay.isFocused()) {
@@ -114,14 +114,14 @@ public class DirectorySelectionMenu extends GuiScreen {
     }
 
     @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state) {
+    protected void mouseReleased(final int mouseX, final int mouseY, final int state) {
         super.mouseReleased(mouseX, mouseY, state);
         this.folderListIn.mouseReleased(mouseX, mouseY, state);
         this.pathDisplay.setText(this.folderListIn.currentPath());
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         super.drawDefaultBackground();
         this.folderListIn.drawScreen(mouseX, mouseY, partialTicks);
         this.drawDefaultBackground();
@@ -144,7 +144,7 @@ public class DirectorySelectionMenu extends GuiScreen {
     }
 
     @Override
-    public void onResize(Minecraft mcIn, int w, int h) {
+    public void onResize(final Minecraft mcIn, final int w, final int h) {
 
         this.parentIn.onResize(mcIn, w, h);
         this.width = w;

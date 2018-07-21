@@ -23,7 +23,7 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IMenuType {
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public SinglePlayerMenu(GuiScreen screenIn) {
+    public SinglePlayerMenu(final GuiScreen screenIn) {
         super(screenIn);
     }
 
@@ -37,7 +37,7 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IMenuType {
     //-----Overridden Methods:------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    protected void actionPerformed(GuiButton button, FolderList<WorldEntry> directories, WorldList selectionList) {
+    protected void actionPerformed(final GuiButton button, final FolderList<WorldEntry> directories, final WorldList selectionList) {
         try {
             WorldEntry selectedWorld = selectionList.getSelectedWorld();
             switch (button.id) {
@@ -79,26 +79,25 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IMenuType {
                     super.actionPerformed(button);
                     break;
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             References.LOG.error("", e);
         }
     }
 
     @Override
-    public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+    public void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) {
         //:: do nothing
         // - Override this so the wrapper gui handles all mouse input
     }
 
     @Override
-    public void mouseReleased(int mouseX, int mouseY, int mouseButton) {
+    public void mouseReleased(final int mouseX, final int mouseY, final int mouseButton) {
         //:: do nothing
         // - Override this so the wrapper gui handles all mouse input
     }
 
     @Override
-    public void invokeEntryCreation(ModifiableMenu menu) {
+    public void invokeEntryCreation(final ModifiableMenu menu) {
         this.mc.displayGuiScreen(new CreateWorldEntryMenu(this, new FolderList(menu.getDirectoryList())));
     }
 

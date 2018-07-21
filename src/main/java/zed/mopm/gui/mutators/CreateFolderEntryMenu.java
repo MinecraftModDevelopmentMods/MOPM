@@ -24,7 +24,7 @@ public class CreateFolderEntryMenu extends GuiScreen {
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public CreateFolderEntryMenu(GuiScreen parentIn) {
+    public CreateFolderEntryMenu(final GuiScreen parentIn) {
         this.parentIn = parentIn;
     }
 
@@ -49,29 +49,29 @@ public class CreateFolderEntryMenu extends GuiScreen {
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) {
+    protected void actionPerformed(final GuiButton button) {
         if (button.id == 2) {
-                ((IFolderMenu)parentIn).getDirectoryList().addFolder(this.folderNameInquiry.getText());
+                ((IFolderMenu) parentIn).getDirectoryList().addFolder(this.folderNameInquiry.getText());
         }
 
         this.mc.displayGuiScreen(this.parentIn);
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) {
+    protected void keyTyped(final char typedChar, final int keyCode) {
         if (this.folderNameInquiry.isFocused()) {
             this.folderNameInquiry.textboxKeyTyped(typedChar, keyCode);
         }
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         this.folderNameInquiry.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         if (doDrawScreen) {
             parentIn.drawScreen(mouseX, mouseY, partialTicks);
             this.drawDefaultBackground();
@@ -88,7 +88,7 @@ public class CreateFolderEntryMenu extends GuiScreen {
         //:: Background
         int background = ColorUtils.getARGB(0, 0, 0, 100);
         this.drawGradientRect(0, 0, this.width, this.height, background, background);
-        GuiUtils.drawTexturedRect(0.0D, (double)(this.height - 63), (double)(this.width), (double) this.height, (double)this.zLevel - 1, 64, 64, 64, 255, 0, OPTIONS_BACKGROUND, this.mc);
+        GuiUtils.drawTexturedRect(0.0D, (double) (this.height - 63), (double) (this.width), (double) this.height, (double) this.zLevel - 1, 64, 64, 64, 255, 0, OPTIONS_BACKGROUND, this.mc);
 
         //:: Bounding box
         int thickness = 20;
@@ -102,7 +102,7 @@ public class CreateFolderEntryMenu extends GuiScreen {
     }
 
     @Override
-    public void onResize(Minecraft mcIn, int w, int h) {
+    public void onResize(final Minecraft mcIn, final int w, final int h) {
         this.doDrawScreen = true;
         this.parentIn.onResize(mcIn, w, h);
         this.width = w;

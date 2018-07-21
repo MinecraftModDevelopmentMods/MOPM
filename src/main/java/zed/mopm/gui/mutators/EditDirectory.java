@@ -29,7 +29,7 @@ public class EditDirectory<T extends GuiListExtended & IModifiableList> extends 
 
     private GuiTextField changeName;
 
-    public EditDirectory(GuiScreen parentIn, int mouseX, int mouseY, boolean doClose, T list) {
+    public EditDirectory(final GuiScreen parentIn, final int mouseX, final int mouseY, final boolean doClose, final T list) {
         this.parentIn = parentIn;
         this.modifiableList = list;
         this.entryIndex = list.getSlotIndexFromScreenCoords(mouseX, mouseY);
@@ -46,7 +46,7 @@ public class EditDirectory<T extends GuiListExtended & IModifiableList> extends 
         changeName.setVisible(false);
     }
 
-    public EditDirectory(GuiScreen parentIn, int mouseX, int mouseY, T list) {
+    public EditDirectory(final GuiScreen parentIn, final int mouseX, final int mouseY, final T list) {
         this(parentIn, mouseX, mouseY, true, list);
     }
 
@@ -58,7 +58,7 @@ public class EditDirectory<T extends GuiListExtended & IModifiableList> extends 
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         this.parentIn.drawScreen(mouseX, mouseY, partialTicks);
 
         if (this.changeName.getVisible()) {
@@ -69,7 +69,7 @@ public class EditDirectory<T extends GuiListExtended & IModifiableList> extends 
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) {
+    protected void actionPerformed(final GuiButton button) {
         Editor action = Editor.values()[button.id];
         switch (action) {
             case DELETE: {
@@ -98,7 +98,7 @@ public class EditDirectory<T extends GuiListExtended & IModifiableList> extends 
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) {
+    protected void keyTyped(final char typedChar, final int keyCode) {
         if (keyCode == 28) {
             this.modifiableList.rename(this.entryIndex, this.changeName.getText());
             closeGui();
@@ -109,11 +109,10 @@ public class EditDirectory<T extends GuiListExtended & IModifiableList> extends 
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
         if (!(this.delete.mousePressed(this.mc, mouseX, mouseY) || this.rename.mousePressed(this.mc, mouseX, mouseY) || this.move.mousePressed(this.mc, mouseX, mouseY))) {
             closeGui();
-        }
-        else {
+        } else {
             super.mouseClicked(mouseX, mouseY, mouseButton);
         }
     }
@@ -124,7 +123,7 @@ public class EditDirectory<T extends GuiListExtended & IModifiableList> extends 
     }
 
     @Override
-    public void onResize(Minecraft mcIn, int w, int h) {
+    public void onResize(final Minecraft mcIn, final int w, final int h) {
         this.parentIn.onResize(mcIn, w, h);
     }
 

@@ -4,11 +4,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Created by Zedlander1001 on 2/26/2018
- * - This class holds data relevant to the mod information
+ * This class holds data relevant to the mod information.
+ * @author Zedlander1001 on 2/26/2018
  */
-public final class References {
-    private References() {}
+public class References {
+    private References() { }
 
     //-Mod Info
     //::Standard Mod information.

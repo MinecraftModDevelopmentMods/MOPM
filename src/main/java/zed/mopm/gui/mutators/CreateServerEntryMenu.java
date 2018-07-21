@@ -26,7 +26,7 @@ public class CreateServerEntryMenu extends GuiScreenAddServer implements IFolder
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public CreateServerEntryMenu(GuiScreen parentScreenIn, ServerData serverDataIn, FolderList folderList) {
+    public CreateServerEntryMenu(final GuiScreen parentScreenIn, final ServerData serverDataIn, final FolderList folderList) {
         super(parentScreenIn, serverDataIn);
         this.parentIn = parentScreenIn;
         selectDir = new DirectorySelectionMenu(this, folderList);
@@ -56,13 +56,13 @@ public class CreateServerEntryMenu extends GuiScreenAddServer implements IFolder
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
         this.pathDisplay.drawTextBox();
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
+    protected void actionPerformed(final GuiButton button) throws IOException {
         References.LOG.info("TEST");
         super.actionPerformed(button);
         switch (button.id) {
@@ -80,7 +80,7 @@ public class CreateServerEntryMenu extends GuiScreenAddServer implements IFolder
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
+    protected void keyTyped(final char typedChar, final int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
         if (this.pathDisplay.isFocused() && keyCode == 203 || keyCode == 205 || GuiScreen.isKeyComboCtrlA(keyCode) || GuiScreen.isKeyComboCtrlC(keyCode)) {
             this.pathDisplay.textboxKeyTyped(typedChar, keyCode);
@@ -88,25 +88,25 @@ public class CreateServerEntryMenu extends GuiScreenAddServer implements IFolder
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         this.pathDisplay.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
-    public void onResize(Minecraft mcIn, int w, int h) {
+    public void onResize(final Minecraft mcIn, final int w, final int h) {
         super.onResize(mcIn, w, h);
         this.width = w;
         this.height = h;
     }
 
     @Override
-    public void setPath(String path) {
+    public void setPath(final String path) {
         pathDisplay.setText("Dir: " + path);
     }
 
     @Override
-    public void setUniquePath(String path) {
+    public void setUniquePath(final String path) {
         savePath = path;
     }
 

@@ -19,7 +19,7 @@ import zed.mopm.util.References;
 import java.io.File;
 import java.util.*;
 
-public class FolderList <K extends IFolderPath> extends GuiListExtended implements IModifiableList {
+public class FolderList<K extends IFolderPath> extends GuiListExtended implements IModifiableList {
     private GuiScreen container;
 
     private File saveFile;
@@ -41,12 +41,11 @@ public class FolderList <K extends IFolderPath> extends GuiListExtended implemen
      * @param slotHeightIn
      * @param saveIn
      */
-    public FolderList(ModifiableMenu parentIn, int widthIn, int heightIn, int topIn, int slotHeightIn, File saveIn) {
+    public FolderList(final ModifiableMenu parentIn, final int widthIn, final int heightIn, final int topIn, final int slotHeightIn, final File saveIn) {
         this(widthIn, heightIn, topIn, slotHeightIn);
         if (parentIn.getInvokeScreen() instanceof SinglePlayerMenu) {
             saveFile = new File(saveIn, MOPMLiterals.MOPM_SSP);
-        }
-        else if (parentIn.getInvokeScreen() instanceof MultiplayerMenu) {
+        } else if (parentIn.getInvokeScreen() instanceof MultiplayerMenu) {
             saveFile = new File(saveIn, MOPMLiterals.MOPM_SMP);
         }
 
@@ -61,7 +60,7 @@ public class FolderList <K extends IFolderPath> extends GuiListExtended implemen
      * @param topIn
      * @param slotHeightIn
      */
-    private FolderList(int widthIn, int heightIn, int topIn, int slotHeightIn) {
+    private FolderList(final int widthIn, final int heightIn, final int topIn, final int slotHeightIn) {
         super(Minecraft.getMinecraft(), widthIn, heightIn, topIn, 0, slotHeightIn);
         base = new FolderEntry(MOPMLiterals.BASE_DIR_NAME);
         this.currentDir = base;
@@ -72,7 +71,7 @@ public class FolderList <K extends IFolderPath> extends GuiListExtended implemen
      *
      * @param copyFrom
      */
-    public FolderList(FolderList copyFrom) {
+    public FolderList(final FolderList copyFrom) {
         this(copyFrom.width, copyFrom.height, copyFrom.top, copyFrom.slotHeight);
         this.container = null;
         this.clone = true;
@@ -101,7 +100,7 @@ public class FolderList <K extends IFolderPath> extends GuiListExtended implemen
      * @param mouseY
      */
     @Override
-    protected void elementClicked(int slotIndex, boolean isDoubleClick, int mouseX, int mouseY) {
+    protected void elementClicked(final int slotIndex, final boolean isDoubleClick, final int mouseX, final int mouseY) {
         if (isDoubleClick) {
             currentDir = currentDir.stepDown(slotIndex);
             currentPath.push(currentDir.getUniqueName());
@@ -123,12 +122,11 @@ public class FolderList <K extends IFolderPath> extends GuiListExtended implemen
      *         Returns false otherwise.
      */
     @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int mouseEvent) {
+    public boolean mouseClicked(final int mouseX, final int mouseY, final int mouseEvent) {
         boolean success = super.mouseClicked(mouseX, mouseY, mouseEvent);
         if (success) {
             this.delete(this.getSlotIndexFromScreenCoords(mouseX, mouseY));
-        }
-        else if (mouseEvent == 1 && this.getSlotIndexFromScreenCoords(mouseX, mouseY) != -1) {
+        } else if (mouseEvent == 1 && this.getSlotIndexFromScreenCoords(mouseX, mouseY) != -1) {
             this.mc.displayGuiScreen(new EditDirectory<>(this.container, mouseX, mouseY, this));
         }
         return success;
@@ -141,7 +139,7 @@ public class FolderList <K extends IFolderPath> extends GuiListExtended implemen
      * @param partialTicks
      */
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
         int background = ColorUtils.getARGB(0, 0, 0, 100);
         GuiUtils.drawGradientRect(0, 32, this.width, this.bottom, background, background, 0);
@@ -152,7 +150,7 @@ public class FolderList <K extends IFolderPath> extends GuiListExtended implemen
      * @return Returns the list entry representation of the directory located at the index of the currently displayed directory list.
      */
     @Override
-    public IGuiListEntry getListEntry(int index) {
+    public IGuiListEntry getListEntry(final int index) {
         return getFolder().getDirectory(index);
     }
 
@@ -186,15 +184,15 @@ public class FolderList <K extends IFolderPath> extends GuiListExtended implemen
     //:: IModifiableList
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public void rename(int entryIndex, String name) {
+    public void rename(final int entryIndex, final String name) {
         getFolder().renameDir(entryIndex, name);
     }
 
-    public void delete(int entryIndex) {
+    public void delete(final int entryIndex) {
         getFolder().removeDir(entryIndex);
     }
 
-    public void changeDir(int entryIndex) {
+    public void changeDir(final int entryIndex) {
         //:: Todo: add feature
     }
 
@@ -217,7 +215,7 @@ public class FolderList <K extends IFolderPath> extends GuiListExtended implemen
      *
      * @param height
      */
-    public void setHeight(int height) {
+    public void setHeight(final int height) {
         this.bottom = height - 64;
     }
 
@@ -242,17 +240,16 @@ public class FolderList <K extends IFolderPath> extends GuiListExtended implemen
      *
      * @param name The name of the new directory.
      */
-    public void addFolder(String name) {
+    public void addFolder(final String name) {
         getFolder().newFolder(name);
     }
 
-    public void populateDirectoryList(List<K> entries) {
+    public void populateDirectoryList(final List<K> entries) {
         for (K entry : entries) {
             try {
                 String populateTo = entry.getPathToDir();
                 base.folderPath(populateTo).newEntry(entry);
-            }
-            catch (NoSuchElementException e) {
+            } catch (NoSuchElementException e) {
                 entry.setPath(MOPMLiterals.BASE_DIR);
                 FolderEntry.writeWorldToBase(entry.getMopmSaveData());
             }
@@ -294,8 +291,7 @@ public class FolderList <K extends IFolderPath> extends GuiListExtended implemen
                 path += "/" + append.substring(0, append.lastIndexOf('#'));
             }
             return MOPMLiterals.BASE_DIR_NAME + "/" + path;
-        }
-        catch (NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return MOPMLiterals.BASE_DIR_NAME;
         }
     }
@@ -315,8 +311,7 @@ public class FolderList <K extends IFolderPath> extends GuiListExtended implemen
                 path += "/" + temp.removeLast();
             }
             return MOPMLiterals.BASE_DIR + "/" + path;
-        }
-        catch (NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return MOPMLiterals.BASE_DIR;
         }
     }
