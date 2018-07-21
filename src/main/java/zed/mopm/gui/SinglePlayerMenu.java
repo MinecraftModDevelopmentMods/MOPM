@@ -14,6 +14,11 @@ import java.util.List;
 
 public class SinglePlayerMenu extends GuiWorldSelection implements IMenuType {
 
+    private static final int EXIT_BTN_ID = 0;
+    private static final int PLAY_BTN_ID = 1;
+    private static final int DELET_BTN_ID = 2;
+    private static final int EDIT_BTN_ID = 4;
+
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://

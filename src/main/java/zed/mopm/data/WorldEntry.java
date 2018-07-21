@@ -1,5 +1,7 @@
 package zed.mopm.data;
 
+import java.io.*;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
 import net.minecraft.client.gui.GuiListWorldSelection;
@@ -12,8 +14,6 @@ import zed.mopm.gui.lists.FolderList;
 import zed.mopm.gui.lists.WorldList;
 import zed.mopm.util.MOPMLiterals;
 import zed.mopm.util.References;
-
-import java.io.*;
 
 public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExtended.IGuiListEntry, IFolderPath, IDrawableListEntry, Comparable<WorldEntry> {
     private WorldSummary summary;

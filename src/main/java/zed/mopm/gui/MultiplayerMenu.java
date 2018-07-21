@@ -11,6 +11,7 @@ import zed.mopm.gui.lists.FolderList;
 import zed.mopm.gui.lists.ServerList;
 import zed.mopm.gui.mutators.CreateServerEntryMenu;
 
+import java.io.IOException;
 import java.util.List;
 
 public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
@@ -23,17 +24,15 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
 
     public MultiplayerMenu(final GuiScreen parentScreen) {
         super(parentScreen);
+        this.saveData = new ServerData(I18n.format("selectServer.defaultName"), "", false);
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Overridden Methods:------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    protected void actionPerformed(final GuiButton button, final FolderList<ServerEntry> directories, final ServerList selectionList) {
-        switch (button.id) {
-            default:
-                break;
-        }
+    protected void actionPerformed(final GuiButton button, final FolderList<ServerEntry> directories, final ServerList selectionList) throws IOException {
+        super.actionPerformed(button);
     }
 
     @Override

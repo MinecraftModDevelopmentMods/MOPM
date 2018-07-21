@@ -77,10 +77,6 @@ public class CreateServerEntryMenu extends GuiScreenAddServer implements IFolder
             }
             break;
         }
-
-        if (button.id != 2) {
-
-        }
     }
 
     @Override

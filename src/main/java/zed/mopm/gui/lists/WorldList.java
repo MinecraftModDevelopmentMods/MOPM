@@ -118,6 +118,14 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList,
         this.mc.displayGuiScreen(new DirectorySelectionMenu(this.worldMenu, entry, new FolderList(this.worldMenu.getDirectoryList())));
     }
 
+    //:: IListType
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    @Override
+    public void refresh() {
+        this.refreshList();
+    }
+
     @Override
     public void display(final List<WorldEntry> entries) {
         Collections.sort(entries);
