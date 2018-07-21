@@ -28,21 +28,21 @@ public class ServerList extends ServerSelectionList implements IModifiableList, 
 
     @Override
     public void rename(int entryIndex, String name) {
-
+    	//
     }
 
     @Override
     public void delete(int entryIndex) {
-
+    	//
     }
 
     @Override
     public void changeDir(int entryIndex) {
-
+    	//
     }
 
     @Override
     public void display(List<ServerEntry> entries) {
-
+    	//
     }
 }

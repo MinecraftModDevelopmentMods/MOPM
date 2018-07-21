@@ -15,12 +15,12 @@ public class ServerEntry extends ServerListEntryNormal implements GuiListExtende
 
     @Override
     public void updatePosition(int slotIndex, int x, int y, float partialTicks) {
-
+    	//
     }
 
     @Override
     public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
-
+    	//
     }
 
     @Override
@@ -30,17 +30,17 @@ public class ServerEntry extends ServerListEntryNormal implements GuiListExtende
 
     @Override
     public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY) {
-
+    	//
     }
 
     @Override
     public void setPath(String path) {
-
+    	//
     }
 
     @Override
     public void setUniquePath(String path) {
-
+    	//
     }
 
     @Override

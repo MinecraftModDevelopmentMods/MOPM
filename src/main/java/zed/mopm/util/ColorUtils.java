@@ -103,7 +103,7 @@ public final class ColorUtils {
         int hex = 0;
         hex = hex | ((r) << 16);
         hex = hex | ((g) << 8);
-        hex = hex | ((b));
+        hex = hex | (b);
         return hex;
     }
 }
