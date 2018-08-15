@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 import zed.mopm.api.data.IFolderPath;
+import zed.mopm.data.WorldEntry;
 import zed.mopm.gui.lists.FolderList;
 import zed.mopm.util.MOPMLiterals;
 import zed.mopm.util.References;
@@ -22,19 +23,19 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
     private GuiButtonExt folderSelection;
     private GuiTextField pathDisplay;
     private String savePath;
-    private File mopmSaveData;
+    private File mopmSaveFile;
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public CreateWorldEntryMenu(final GuiScreen parentScreen, final FolderList folderList) {
+    public CreateWorldEntryMenu(final GuiScreen parentScreen, final FolderList<WorldEntry> folderList) {
         super(parentScreen);
         selectDir = new DirectorySelectionMenu(this, folderList);
 
         pathDisplay = new GuiTextField(1, Minecraft.getMinecraft().fontRenderer, 0, 163, 150, 20);
         pathDisplay.setMaxStringLength(Integer.MAX_VALUE);
-        mopmSaveData = null;
+        mopmSaveFile = null;
         this.setPath(folderList.currentPath());
         this.setUniquePath(folderList.uniquePath());
     }
@@ -84,9 +85,9 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
                     field.setAccessible(true);
                     worldDirName = (String) field.get(this);
 
-                    mopmSaveData = Minecraft.getMinecraft().getSaveLoader().getFile(worldDirName, MOPMLiterals.MOPM_SAVE);
-                    mopmSaveData.getParentFile().mkdirs();
-                    try (DataOutputStream write = new DataOutputStream(new FileOutputStream(mopmSaveData))) {
+                    mopmSaveFile = Minecraft.getMinecraft().getSaveLoader().getFile(worldDirName, MOPMLiterals.MOPM_SAVE_DAT);
+                    mopmSaveFile.getParentFile().mkdirs();
+                    try (DataOutputStream write = new DataOutputStream(new FileOutputStream(mopmSaveFile))) {
                         write.write(this.savePath.getBytes());
                     }
                 } catch (NoSuchFieldException | IllegalAccessException | IOException e) {
@@ -178,8 +179,8 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath 
      */
     @Override
     @Nullable
-    public File getMopmSaveData() {
-        return mopmSaveData;
+    public File getMopmSaveFile() {
+        return mopmSaveFile;
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://

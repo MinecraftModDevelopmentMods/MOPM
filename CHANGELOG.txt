@@ -40,3 +40,7 @@ Version 1.1.0:
 - Right click context menu added to the world list! Now you can rename, delete, and move worlds on right click
 - Path display in the world selection menu added
 - Path display is collapsible
+
+Version 1.2.0:
+- Fixed: depth integer appended to the directory tree string instead of tabs.
+- Fixed: issue where directories wont load in properly.

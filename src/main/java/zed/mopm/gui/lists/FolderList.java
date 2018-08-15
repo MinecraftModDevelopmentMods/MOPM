@@ -7,6 +7,8 @@ import zed.mopm.api.gui.IFolderMenu;
 import zed.mopm.api.data.IFolderPath;
 import zed.mopm.api.gui.lists.IModifiableList;
 import zed.mopm.data.FolderEntry;
+import zed.mopm.data.ServerEntry;
+import zed.mopm.data.WorldEntry;
 import zed.mopm.gui.ModifiableMenu;
 import zed.mopm.gui.MultiplayerMenu;
 import zed.mopm.gui.SinglePlayerMenu;
@@ -20,7 +22,7 @@ import java.io.File;
 import java.util.*;
 
 public class FolderList<K extends IFolderPath> extends GuiListExtended implements IModifiableList {
-    private GuiScreen container;
+    private ModifiableMenu container;
 
     private File saveFile;
     private FolderEntry<K> base;
@@ -34,12 +36,12 @@ public class FolderList<K extends IFolderPath> extends GuiListExtended implement
 
     /**
      *
-     * @param parentIn
-     * @param widthIn
-     * @param heightIn
-     * @param topIn
-     * @param slotHeightIn
-     * @param saveIn
+     * @param parentIn parent in
+     * @param widthIn width in
+     * @param heightIn height in
+     * @param topIn top in
+     * @param slotHeightIn slot height in
+     * @param saveIn save in
      */
     public FolderList(final ModifiableMenu parentIn, final int widthIn, final int heightIn, final int topIn, final int slotHeightIn, final File saveIn) {
         this(widthIn, heightIn, topIn, slotHeightIn);
@@ -55,10 +57,10 @@ public class FolderList<K extends IFolderPath> extends GuiListExtended implement
 
     /**
      *
-     * @param widthIn
-     * @param heightIn
-     * @param topIn
-     * @param slotHeightIn
+     * @param widthIn width in
+     * @param heightIn height in
+     * @param topIn top in
+     * @param slotHeightIn slot height in
      */
     private FolderList(final int widthIn, final int heightIn, final int topIn, final int slotHeightIn) {
         super(Minecraft.getMinecraft(), widthIn, heightIn, topIn, 0, slotHeightIn);
@@ -69,7 +71,7 @@ public class FolderList<K extends IFolderPath> extends GuiListExtended implement
 
     /**
      *
-     * @param copyFrom
+     * @param copyFrom a copy of the folder list
      */
     public FolderList(final FolderList copyFrom) {
         this(copyFrom.width, copyFrom.height, copyFrom.top, copyFrom.slotHeight);
@@ -92,12 +94,12 @@ public class FolderList<K extends IFolderPath> extends GuiListExtended implement
 
     /**
      * If a directory entry is entered into, update the current directory being looked at,
-     * and add the current directory location to the path.
+     * and addServerData the current directory location to the path.
      *
-     * @param slotIndex
-     * @param isDoubleClick
-     * @param mouseX
-     * @param mouseY
+     * @param slotIndex slot index
+     * @param isDoubleClick has been double clicked
+     * @param mouseX mouse pos x
+     * @param mouseY mouse pos y
      */
     @Override
     protected void elementClicked(final int slotIndex, final boolean isDoubleClick, final int mouseX, final int mouseY) {
@@ -115,9 +117,9 @@ public class FolderList<K extends IFolderPath> extends GuiListExtended implement
      * If x area was successfully clicked, delete the directory located at the cursor's coordinates.
      * If the mouse was right clicked, open up the context menu to choose more actions.
      *
-     * @param mouseX
-     * @param mouseY
-     * @param mouseEvent
+     * @param mouseX mouse pos x
+     * @param mouseY mouse pos y
+     * @param mouseEvent the mouse event
      * @return Returns true if a directory entry was successfully clicked.
      *         Returns false otherwise.
      */
@@ -134,9 +136,9 @@ public class FolderList<K extends IFolderPath> extends GuiListExtended implement
 
     /**
      * Draws the list.
-     * @param mouseX
-     * @param mouseY
-     * @param partialTicks
+     * @param mouseX mouse pos x
+     * @param mouseY mouse pos y
+     * @param partialTicks partial ticks
      */
     @Override
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
@@ -193,7 +195,7 @@ public class FolderList<K extends IFolderPath> extends GuiListExtended implement
     }
 
     public void changeDir(final int entryIndex) {
-        //:: Todo: add feature
+        //:: Todo: addServerData feature
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
@@ -251,7 +253,12 @@ public class FolderList<K extends IFolderPath> extends GuiListExtended implement
                 base.folderPath(populateTo).newEntry(entry);
             } catch (NoSuchElementException e) {
                 entry.setPath(MOPMLiterals.BASE_DIR);
-                FolderEntry.writeWorldToBase(entry.getMopmSaveData());
+                if (entry instanceof WorldEntry) {
+                    FolderEntry.writeWorldToBase(entry.getMopmSaveFile());
+                }
+                else if (entry instanceof ServerEntry) {
+                    FolderEntry.writeServerToBase((ServerEntry) entry);
+                }
             }
         }
     }

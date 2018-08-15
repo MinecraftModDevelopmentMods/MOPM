@@ -11,11 +11,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import zed.mopm.gui.events.EventMenuOpened;
 import zed.mopm.util.References;
 
-@Mod(modid = References.MODID, name = References.NAME, version = References.VERSION, certificateFingerprint = "@FINGERPRINT@")
+@Mod(modid = References.MODID, name = References.NAME, version = References.VERSION, certificateFingerprint = "@FINGERPRINT@", clientSideOnly = true)
 public class ModRegistry {
-
-    @SidedProxy(clientSide = References.CLIENTSIDE)
-    public static ClientProxy proxy;
 
     @Mod.EventHandler
     public void preModInit(final FMLPreInitializationEvent preInit) {
@@ -36,5 +33,4 @@ public class ModRegistry {
     public void onFingerprintViolation(final FMLFingerprintViolationEvent event) {
         References.LOG.warn(References.INVALID_FINGERPRINT);
     }
-
 }

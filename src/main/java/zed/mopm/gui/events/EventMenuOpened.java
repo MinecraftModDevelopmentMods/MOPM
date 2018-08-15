@@ -11,7 +11,7 @@ import zed.mopm.data.WorldEntry;
 import zed.mopm.gui.ModifiableMenu;
 import zed.mopm.gui.MultiplayerMenu;
 import zed.mopm.gui.SinglePlayerMenu;
-import zed.mopm.gui.lists.ServerList;
+import zed.mopm.gui.lists.ServerEntryList;
 import zed.mopm.gui.lists.WorldList;
 import zed.mopm.util.References;
 
@@ -20,7 +20,7 @@ public class EventMenuOpened {
     private EventMenuOpened() { }
 
     private static ModifiableMenu<SinglePlayerMenu, WorldEntry, WorldList> worldSelection;
-    private static ModifiableMenu<MultiplayerMenu, ServerEntry, ServerList> serverSelection;
+    private static ModifiableMenu<MultiplayerMenu, ServerEntry, ServerEntryList> serverSelection;
 
     private static SinglePlayerMenu sspMenu;
     private static MultiplayerMenu smpMenu;
@@ -50,6 +50,6 @@ public class EventMenuOpened {
         worldSelection.setContainingList(new WorldList(worldSelection, Minecraft.getMinecraft(), 36));
 
         serverSelection = new ModifiableMenu<>(smpMenu, Minecraft.getMinecraft());
-        serverSelection.setContainingList(new ServerList(smpMenu, Minecraft.getMinecraft(), 36));
+        serverSelection.setContainingList(new ServerEntryList(serverSelection, Minecraft.getMinecraft(), 36));
     }
 }

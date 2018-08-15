@@ -145,9 +145,9 @@ public class FolderEntry<K> {
     }
 
     /**
-     *
-     * @param i
-     * @return
+     * Gets The directory at i
+     * @param i index
+     * @return returns the directory at i
      */
     public Directory getDirectory(final int i) {
         return directories.get(i);
@@ -155,8 +155,8 @@ public class FolderEntry<K> {
 
     /**
      * Returns the entry of the current directory located in i.
-     * @param i
-     * @return
+     * @param i index
+     * @return returns the entry at i
      */
     public K getEntry(final int i) {
         return this.entries.get(i);
@@ -271,13 +271,13 @@ public class FolderEntry<K> {
      * @param str The String to append to.
      */
     private void listDirectories(final boolean showEntries, final String depthIn, final StringBuilder str) {
-        str.append(depth).append(this.uniqueName).append(':').append('\n');
+        str.append(depthIn).append(this.uniqueName).append(':').append('\n');
         for (Directory dir : this.directories) {
             this.directoryData.get(dir.dirUUID()).listDirectories(showEntries, depthIn + "\t", str);
         }
         if (showEntries) {
             for (K entry : this.entries) {
-                str.append(depth).append("- ").append(entry.toString()).append('\n');
+                str.append(depthIn).append("- ").append(entry.toString()).append('\n');
             }
         }
     }
@@ -316,7 +316,7 @@ public class FolderEntry<K> {
     /**
      * @see #removeDir(String)
      * @param indexIn The index used to reference what subdirectory should be removed from the called upon directory.
-     * @return
+     * @return returns true if the directory at i was successfully removed. false otherwise
      */
     public boolean removeDir(final int indexIn) {
         return removeDir(this.directories.get(indexIn).uniqueDirName);
@@ -348,10 +348,10 @@ public class FolderEntry<K> {
 
         if (!hasEntry) {
             if (temp.entries.get(0) instanceof WorldEntry) {
-                hasEntry = writeWorldsToBase(temp);
+                hasEntry = writeWorldsToBase((FolderEntry<WorldEntry>) temp);
             }
             if (temp.entries.get(0) instanceof ServerEntry) {
-                hasEntry = writeServersToBase(temp);
+                hasEntry = writeServersToBase((FolderEntry<ServerEntry>) temp);
             }
         }
 
@@ -421,9 +421,9 @@ public class FolderEntry<K> {
      * @param folder
      * @return
      */
-    private static boolean writeWorldsToBase(final FolderEntry folder) {
-        for (final WorldEntry entry : (List<WorldEntry>) folder.entries) {
-            File createSavePath = Minecraft.getMinecraft().getSaveLoader().getFile(entry.getFileName(), MOPMLiterals.MOPM_SAVE);
+    private static boolean writeWorldsToBase(final FolderEntry<WorldEntry> folder) {
+        for (final WorldEntry entry : folder.entries) {
+            File createSavePath = Minecraft.getMinecraft().getSaveLoader().getFile(entry.getFileName(), MOPMLiterals.MOPM_SAVE_DAT);
             createSavePath.getParentFile().mkdirs();
 
             if (!writeWorldToBase(createSavePath)) {
@@ -435,8 +435,8 @@ public class FolderEntry<K> {
 
     /**
      *
-     * @param worldFolder
-     * @return
+     * @param worldFolder the file in which the world save path location is saved in
+     * @return returns true if the world was successfully written to the base directory. false otherwise
      */
     public static boolean writeWorldToBase(final File worldFolder) {
         try (DataOutputStream write = new DataOutputStream(new FileOutputStream(worldFolder))) {
@@ -450,14 +450,14 @@ public class FolderEntry<K> {
 
     /**
      *
-     * @return
+     * @return returns true if all worlds were successfully saved to the base directory. returns false if only one world was unsuccessfully saved
      */
     private static boolean safeWriteWorldsToBase() throws AnvilConverterException {
         final Minecraft mc = Minecraft.getMinecraft();
         final ISaveFormat saveLoader = mc.getSaveLoader();
 
         for (final WorldSummary summary : saveLoader.getSaveList()) {
-            if (!writeWorldToBase(saveLoader.getFile(summary.getFileName(), MOPMLiterals.MOPM_SAVE))) {
+            if (!writeWorldToBase(saveLoader.getFile(summary.getFileName(), MOPMLiterals.MOPM_SAVE_DAT))) {
                 return false;
             }
         }
@@ -467,21 +467,33 @@ public class FolderEntry<K> {
 
     /**
      *
-     * @param folder
-     * @return
+     * @param folder the virtual folder servers are contained in
+     * @return returns true if all servers were successfully saved to the base directory. returns false if only one server was unsuccessfully saved.
      */
-    private static boolean writeServersToBase(final FolderEntry folder) {
-        //TODO: Write this for server entries
+    private static boolean writeServersToBase(final FolderEntry<ServerEntry> folder) {
+        for (final ServerEntry entry : folder.entries) {
+            if (!writeServerToBase(entry)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean writeServerToBase(final ServerEntry entry) {
+        entry.setUniquePath(MOPMLiterals.BASE_DIR);
+        entry.updateList();
         return true;
     }
 
     private static boolean safeWriteServersToBase() {
+        //TODO: Write this for server entries
+        //:: do nbt stuff here to set path to base in the file
         return true;
     }
 
     /**
      *
-     * @param loadFrom
+     * @param loadFrom the file to load from
      */
     public void load(final File loadFrom) {
         if (!loadFrom.isFile()) {
@@ -493,7 +505,7 @@ public class FolderEntry<K> {
 
     /**
      *
-     * @param loadFrom
+     * @param loadFrom the file to load from
      */
     private static void hardLoad(final File loadFrom) {
         try (DataOutputStream write = new DataOutputStream(new FileOutputStream(loadFrom))) {
@@ -512,9 +524,6 @@ public class FolderEntry<K> {
         }
     }
 
-    /**
-     *
-     */
     public void softLoad(final File loadFrom) {
         try (BufferedReader reader = new BufferedReader(new FileReader(loadFrom))) {
 
@@ -549,8 +558,8 @@ public class FolderEntry<K> {
 
     /**
      *
-     * @param saveTo
-     * @return
+     * @param saveTo the file to save to
+     * @return returns true if the file was successfully saved. false otherwise.
      */
     public boolean save(final File saveTo) {
         //:: Return false if the directory is not the base directory.

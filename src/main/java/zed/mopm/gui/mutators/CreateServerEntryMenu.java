@@ -3,13 +3,13 @@ package zed.mopm.gui.mutators;
 import jline.internal.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
-import net.minecraft.client.multiplayer.ServerData;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 import zed.mopm.api.data.IFolderPath;
+import zed.mopm.api.data.ServerDataStatus;
+import zed.mopm.data.ServerEntry;
+import zed.mopm.data.ServerSaveData;
 import zed.mopm.gui.lists.FolderList;
-import zed.mopm.util.References;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -17,23 +17,25 @@ public class CreateServerEntryMenu extends GuiScreenAddServer implements IFolder
     private GuiScreen parentIn;
     private DirectorySelectionMenu selectDir;
 
+    private ServerSaveData saveData;
     private GuiButtonExt folderSelection;
     private GuiTextField pathDisplay;
     private String savePath;
-    private File mopmSaveData;
+    private File mopmSaveFile;
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public CreateServerEntryMenu(final GuiScreen parentScreenIn, final ServerData serverDataIn, final FolderList folderList) {
-        super(parentScreenIn, serverDataIn);
+    public CreateServerEntryMenu(final GuiScreen parentScreenIn, final ServerSaveData serverDataIn, final FolderList<ServerEntry> folderList) {
+        super(parentScreenIn, serverDataIn.getServerData());
         this.parentIn = parentScreenIn;
-        selectDir = new DirectorySelectionMenu(this, folderList);
+        this.selectDir = new DirectorySelectionMenu(this, folderList);
+        this.saveData = serverDataIn;
 
-        pathDisplay = new GuiTextField(1, Minecraft.getMinecraft().fontRenderer, 0, 30, 150, 20);
-        pathDisplay.setMaxStringLength(Integer.MAX_VALUE);
-        mopmSaveData = null;
+        this.pathDisplay = new GuiTextField(1, Minecraft.getMinecraft().fontRenderer, 0, 30, 150, 20);
+        this.pathDisplay.setMaxStringLength(Integer.MAX_VALUE);
+        this.mopmSaveFile = null;
         this.setPath(folderList.currentPath());
         this.setUniquePath(folderList.uniquePath());
     }
@@ -63,9 +65,20 @@ public class CreateServerEntryMenu extends GuiScreenAddServer implements IFolder
 
     @Override
     protected void actionPerformed(final GuiButton button) throws IOException {
-        References.LOG.info("TEST");
+        final ServerDataStatus status = this.saveData.getStatus();
+        this.saveData.changeStatus(ServerDataStatus.NONE);
         super.actionPerformed(button);
+        this.saveData.changeStatus(status);
+
         switch (button.id) {
+
+            //:: Create server entry and save it to the servers.dat
+            case 0: {
+                this.saveData.setSavePath(savePath);
+                this.parentIn.confirmClicked(true, 0);
+            }
+            break;
+
             // 100: Select the directory the world should be stored in.
             case 100: {
                 this.mc.displayGuiScreen(this.selectDir);
@@ -117,7 +130,7 @@ public class CreateServerEntryMenu extends GuiScreenAddServer implements IFolder
 
     @Override
     @Nullable
-    public File getMopmSaveData() {
-        return mopmSaveData;
+    public File getMopmSaveFile() {
+        return mopmSaveFile;
     }
 }

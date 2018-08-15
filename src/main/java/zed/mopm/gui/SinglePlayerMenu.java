@@ -3,6 +3,7 @@ package zed.mopm.gui;
 import net.minecraft.client.gui.*;
 
 import zed.mopm.api.gui.IMenuType;
+import zed.mopm.api.gui.lists.IListType;
 import zed.mopm.data.WorldEntry;
 import zed.mopm.gui.lists.FolderList;
 import zed.mopm.gui.lists.WorldList;
@@ -16,8 +17,9 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IMenuType {
 
     private static final int EXIT_BTN_ID = 0;
     private static final int PLAY_BTN_ID = 1;
-    private static final int DELET_BTN_ID = 2;
+    private static final int DELETE_BTN_ID = 2;
     private static final int EDIT_BTN_ID = 4;
+    private static final int RECREATE_BTN_ID = 5;
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Constructors:------------------------------------------------------------------------------//
@@ -42,33 +44,33 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IMenuType {
             WorldEntry selectedWorld = selectionList.getSelectedWorld();
             switch (button.id) {
                 //:: Exit the world selection menu
-                case 0:
+                case EXIT_BTN_ID:
                     this.mc.displayGuiScreen(this.prevScreen);
                     break;
 
                 //:: Play selected world
-                case 1:
+                case PLAY_BTN_ID:
                     if (selectedWorld != null) {
                         selectedWorld.joinWorld();
                     }
                     break;
 
                 //:: Delete selected world
-                case 2:
+                case DELETE_BTN_ID:
                     if (selectedWorld != null) {
                         selectedWorld.deleteWorld(directories);
                     }
                     break;
 
                 //:: Edit selected world
-                case 4:
+                case EDIT_BTN_ID:
                     if (selectedWorld != null) {
                         selectedWorld.editWorld();
                     }
                     break;
 
                 //:: Recreate selected world
-                case 5:
+                case RECREATE_BTN_ID:
                     if (selectedWorld != null) {
                         selectedWorld.recreateWorld();
                     }
@@ -97,8 +99,14 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IMenuType {
     }
 
     @Override
+    public void listInit(IListType list) {
+        //:: do nothing
+        // - There is no extra list initialization that needs to be done.
+    }
+
+    @Override
     public void invokeEntryCreation(final ModifiableMenu menu) {
-        this.mc.displayGuiScreen(new CreateWorldEntryMenu(this, new FolderList(menu.getDirectoryList())));
+        this.mc.displayGuiScreen(new CreateWorldEntryMenu(menu, new FolderList(menu.getDirectoryList())));
     }
 
     @Override

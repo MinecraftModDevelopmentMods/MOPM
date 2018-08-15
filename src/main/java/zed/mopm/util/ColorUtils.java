@@ -93,6 +93,7 @@ public final class ColorUtils {
      * Turns an int into a glColor4f function.
      *
      * @author Buildcraft team
+     * @param color the color represented by an integer
      */
     public static void setGLColorFromInt(final int color) {
         float red = (color >> 16 & 255) / 255.0F;

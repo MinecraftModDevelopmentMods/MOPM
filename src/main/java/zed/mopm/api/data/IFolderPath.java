@@ -9,5 +9,5 @@ public interface IFolderPath {
 
     String getPathToDir();
 
-    File getMopmSaveData();
+    File getMopmSaveFile();
 }

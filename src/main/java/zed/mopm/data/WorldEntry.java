@@ -13,6 +13,7 @@ import zed.mopm.api.data.IFolderPath;
 import zed.mopm.gui.lists.FolderList;
 import zed.mopm.gui.lists.WorldList;
 import zed.mopm.util.MOPMLiterals;
+import zed.mopm.util.PathFormatter;
 import zed.mopm.util.References;
 
 public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExtended.IGuiListEntry, IFolderPath, IDrawableListEntry, Comparable<WorldEntry> {
@@ -34,11 +35,11 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
         worldList = (WorldList) listWorldSelIn;
         summary = worldSummaryIn;
         fileName = worldSummaryIn.getFileName();
-        mopmSaveData = saveFormat.getFile(fileName, MOPMLiterals.MOPM_SAVE);
+        mopmSaveData = saveFormat.getFile(fileName, MOPMLiterals.MOPM_SAVE_DAT);
 
         try (BufferedReader reader = new BufferedReader(new FileReader(mopmSaveData))) {
             pathToContainingDirectory = reader.readLine();
-            this.ensurePathFormat();
+            pathToContainingDirectory = PathFormatter.ensurePathFormat(pathToContainingDirectory);
         } catch (IOException e) {
             References.LOG.error("", e);
         }
@@ -47,14 +48,6 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----This:--------------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
-
-    private void ensurePathFormat() {
-        if (pathToContainingDirectory.startsWith(MOPMLiterals.BASE_DIR + "/")) {
-            this.pathToContainingDirectory = this.pathToContainingDirectory.substring((MOPMLiterals.BASE_DIR + "/").length());
-        } else {
-            this.pathToContainingDirectory = "";
-        }
-    }
 
     public String getFileName() {
         return this.fileName;
@@ -117,7 +110,7 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
         } catch (IOException e) {
             References.LOG.error("", e);
         }
-        this.ensurePathFormat();
+        this.pathToContainingDirectory = PathFormatter.ensurePathFormat(pathToContainingDirectory);
     }
 
     @Override
@@ -126,7 +119,7 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
     }
 
     @Override
-    public File getMopmSaveData() {
+    public File getMopmSaveFile() {
         return this.mopmSaveData;
     }
 

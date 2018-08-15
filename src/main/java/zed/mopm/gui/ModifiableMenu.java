@@ -15,7 +15,7 @@ import zed.mopm.data.ServerEntry;
 import zed.mopm.data.WorldEntry;
 import zed.mopm.gui.buttons.ToolTipButton;
 import zed.mopm.gui.lists.FolderList;
-import zed.mopm.gui.lists.ServerList;
+import zed.mopm.gui.lists.ServerEntryList;
 import zed.mopm.gui.lists.WorldList;
 import zed.mopm.gui.mutators.CreateFolderEntryMenu;
 import zed.mopm.util.GuiUtils;
@@ -81,6 +81,7 @@ public class ModifiableMenu<K extends GuiScreen & IMenuType, J extends GuiListEx
         Keyboard.enableRepeatEvents(true);
         invokeScreen.setWorldAndResolution(this.mc, this.width, this.height);
         invokeScreen.initGui();
+        invokeScreen.listInit(entrySelectionList);
 
         this.directoryDisplay = new GuiTextField(1, this.fontRenderer, DIR_DISPLAY_X, DIR_DISPLAY_Y, (this.directoryDisplay == null) ? this.width - DIR_DISPLAY_PADDING : this.directoryDisplay.width, DIR_DISPLAY_HEIGHT);
         this.directoryDisplay.setMaxStringLength(Integer.MAX_VALUE);
@@ -159,8 +160,8 @@ public class ModifiableMenu<K extends GuiScreen & IMenuType, J extends GuiListEx
             default:
                 if (this.invokeScreen instanceof SinglePlayerMenu) {
                     ((SinglePlayerMenu) this.invokeScreen).actionPerformed(button, (FolderList<WorldEntry>) this.directories, (WorldList) this.entrySelectionList);
-                } else if (this.entrySelectionList instanceof ServerList) {
-                    ((MultiplayerMenu) this.invokeScreen).actionPerformed(button, (FolderList<ServerEntry>) this.directories, (ServerList) this.entrySelectionList);
+                } else if (this.entrySelectionList instanceof ServerEntryList) {
+                    ((MultiplayerMenu) this.invokeScreen).actionPerformed(button, this);
                 }
                 break;
         }
@@ -246,6 +247,12 @@ public class ModifiableMenu<K extends GuiScreen & IMenuType, J extends GuiListEx
                 break;
 
         }
+    }
+
+    @Override
+    public void confirmClicked(boolean result, int id) {
+        this.invokeScreen.confirmClicked(result, id);
+        this.mc.displayGuiScreen(this);
     }
 
     @Override
