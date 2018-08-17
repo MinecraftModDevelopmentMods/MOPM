@@ -5,6 +5,7 @@ import net.minecraft.client.gui.*;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import zed.mopm.api.data.ServerDataStatus;
+import zed.mopm.api.gui.mutators.CreatorMenu;
 import zed.mopm.api.gui.mutators.ICreatorMenu;
 import zed.mopm.data.ServerSaveData;
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class CreateServerEntryMenu extends GuiScreenAddServer implements ICreato
         this.saveData.changeStatus(status);
 
         switch (btn.id) {
-            case CREATION_ID:
+            case CreatorMenu.CREATION_ID:
                 this.saveData.getServerData().serverName = this.nameField.getText();
                 this.saveData.getServerData().serverIP = this.ipField.getText();
                 this.saveData.setSavePath(entryMenu.getSavePath());

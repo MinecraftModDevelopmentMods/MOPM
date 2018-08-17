@@ -12,6 +12,8 @@ public class MOPMLiterals {
     public static final int RIGHT_ARROW_KEY = 205;
     public static final int ESC_KEY = 1;
 
+    public static final String MOPM_PATH_DELIM = "/";
+
     public static final String SERVERS_TAG = "servers";
     public static final String SERVERS_DAT = "servers.dat";
 

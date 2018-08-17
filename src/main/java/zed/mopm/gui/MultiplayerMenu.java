@@ -28,7 +28,7 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
     private static final int EDITING_ID = 7;
     private static final int REFRESH_ID = 8;
 
-    private static final List<Integer> ENABLED_BUTTONS = Arrays.asList(new Integer(1), new Integer(2), new Integer(7));
+    private static final List<Integer> ENABLED_BUTTONS = Arrays.asList(1, 2, 7);
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Fields:------------------------------------------------------------------------------------//
@@ -54,11 +54,6 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
 
     //:: GuiMultiplayer
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
-
-    @Override
-    public void initGui() {
-        super.initGui();
-    }
 
     protected void actionPerformed(final GuiButton button, final ModifiableMenu menu) {
         switch (button.id) {

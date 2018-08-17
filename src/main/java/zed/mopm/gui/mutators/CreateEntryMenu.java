@@ -80,14 +80,11 @@ public class CreateEntryMenu <K extends GuiScreen & ICreatorMenu, L extends IFol
 
     @Override
     protected void actionPerformed(final GuiButton btn) throws IOException {
-        switch (btn.id) {
-            case SELECTION_ID:
-                this.mc.displayGuiScreen(this.selectionMenu);
-                break;
-
-            default:
-                this.invokeCreator.handleActionPerformed(btn, this);
-                break;
+        if (btn.id == SELECTION_ID) {
+            this.mc.displayGuiScreen(this.selectionMenu);
+        }
+        else {
+            this.invokeCreator.handleActionPerformed(btn, this);
         }
     }
 

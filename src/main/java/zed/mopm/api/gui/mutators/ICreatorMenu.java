@@ -10,10 +10,6 @@ import java.io.IOException;
 
 public interface ICreatorMenu {
 
-    int CREATION_ID = 0;
-
-    int TOGGLE_DISPLAY_ID = 3;
-
     GuiTextField getTextField();
 
     GuiButtonExt getSelectionButton(final int screenWidth);

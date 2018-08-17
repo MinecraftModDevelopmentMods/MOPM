@@ -118,7 +118,6 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IMenuType {
     @Override
     public void invokeEntryCreation(final ModifiableMenu menu) {
         this.mc.displayGuiScreen(new CreateEntryMenu<CreateWorldEntryMenu, WorldEntry>(new CreateWorldEntryMenu(menu), new FolderList<>(menu.getDirectoryList())));
-        //this.mc.displayGuiScreen(new CreateWorldEntryMenu(menu, new FolderList(menu.getDirectoryList())));
     }
 
     @Override

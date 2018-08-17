@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiCreateWorld;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
+import zed.mopm.api.gui.mutators.CreatorMenu;
 import zed.mopm.api.gui.mutators.ICreatorMenu;
 import zed.mopm.util.MOPMLiterals;
 import zed.mopm.util.References;
@@ -60,11 +61,11 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements ICreatorMenu
     @Override
     public void handleActionPerformed(final GuiButton btn, final CreateEntryMenu entryMenu) throws IOException {
         switch (btn.id) {
-            case CREATION_ID:
+            case CreatorMenu.CREATION_ID:
                 entryMenu.setMopmSaveFile(writeSaveData(entryMenu.getSavePath()));
                 break;
 
-            case TOGGLE_DISPLAY_ID:
+            case CreatorMenu.TOGGLE_DISPLAY_ID:
                 entryMenu.toggleDisplay();
                 break;
 
