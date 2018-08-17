@@ -19,12 +19,33 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ServerSaveLoadUtils extends ServerList implements Iterable<ServerSaveData> {
-    private static final File SAVE_DIR = new File(Minecraft.getMinecraft().gameDir, "servers.dat");
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constants:---------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Fields:------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    private static final File SAVE_DIR = new File(Minecraft.getMinecraft().gameDir, MOPMLiterals.SERVERS_DAT);
     private List<ServerSaveData> servers;
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constructors:------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     public ServerSaveLoadUtils(Minecraft mcIn) {
         super(mcIn);
         this.createDataFile();
     }
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Overridden Methods:------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:: ServerList
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     @Override
     public void loadServerList() {
@@ -40,7 +61,7 @@ public class ServerSaveLoadUtils extends ServerList implements Iterable<ServerSa
             if (nbtCompound == null) {
                 return;
             }
-            NBTTagList tagList = nbtCompound.getTagList("servers", 10);
+            NBTTagList tagList = nbtCompound.getTagList(MOPMLiterals.SERVERS_TAG, 10);
 
             for (int i = 0; i < tagList.tagCount(); ++i) {
                 final NBTTagCompound tagCompound = tagList.getCompoundTagAt(i);
@@ -55,6 +76,18 @@ public class ServerSaveLoadUtils extends ServerList implements Iterable<ServerSa
         }
     }
 
+    //:: Iterable
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    @Override
+    public Iterator<ServerSaveData> iterator() {
+        return this.servers.iterator();
+    }
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----This:--------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     public void save() {
         try {
             final NBTTagList writeList = new NBTTagList();
@@ -62,7 +95,7 @@ public class ServerSaveLoadUtils extends ServerList implements Iterable<ServerSa
                 writeList.appendTag(data.getNBTSaveData());
             }
             final NBTTagCompound write = new NBTTagCompound();
-            write.setTag("servers", writeList);
+            write.setTag(MOPMLiterals.SERVERS_TAG, writeList);
             CompressedStreamTools.safeWrite(write, SAVE_DIR);
         } catch (IOException e) {
             References.LOG.error("Failed to save server list! servers.dat_tmp has been generated as a backup. Please reload the game with the back up and close all programs that might be in use of the servers.dat file", e);
@@ -79,9 +112,8 @@ public class ServerSaveLoadUtils extends ServerList implements Iterable<ServerSa
         this.servers.remove(index);
     }
 
-    @Override
-    public Iterator<ServerSaveData> iterator() {
-        return this.servers.iterator();
+    public void replace(final int replaceAt, final ServerSaveData data) {
+        this.servers.get(replaceAt).copyFrom(data);
     }
 
     public List<ServerEntry> getDetails(final GuiMultiplayer listScreen) {
@@ -94,10 +126,14 @@ public class ServerSaveLoadUtils extends ServerList implements Iterable<ServerSa
         return loadInServer;
     }
 
+    public ServerSaveData getDetailAt(final int index) {
+        return this.servers.get(index);
+    }
+
     private void createDataFile() {
         if (!SAVE_DIR.exists()) {
             NBTTagCompound tag = new NBTTagCompound();
-            tag.setTag("servers", new NBTTagList());
+            tag.setTag(MOPMLiterals.SERVERS_TAG, new NBTTagList());
             try {
                 CompressedStreamTools.safeWrite(tag, SAVE_DIR);
             } catch (IOException e) {

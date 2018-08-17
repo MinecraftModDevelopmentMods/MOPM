@@ -13,12 +13,19 @@ import zed.mopm.util.ColorUtils;
 import java.io.IOException;
 
 public class DirectorySelectionMenu extends GuiScreen {
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constants:---------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Fields:------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     private GuiScreen parentIn;
     private IFolderPath applySelectionTo;
     private FolderList folderListIn;
 
     private GuiButtonExt exit;
-    private GuiButtonExt back;
     private GuiButtonExt confirm;
     private GuiTextField pathDisplay;
 
@@ -40,16 +47,19 @@ public class DirectorySelectionMenu extends GuiScreen {
     //-----Overridden Methods:------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
+    //:: GuiScreen
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     @Override
     public void initGui() {
         Keyboard.enableRepeatEvents(true);
 
         this.exit = new GuiButtonExt(1, this.width - 30, 10, 15, 15, "X");
-        this.back = new GuiButtonExt(2, 10, 10, 20, 15, "<<");
         this.confirm = new GuiButtonExt(3, this.width - 55, this.height - 63 + 20, 50, 20, "Select");
         this.pathDisplay = new GuiTextField(1, this.fontRenderer, 10, this.height - 63 + 20, this.width - 70, 20);
 
-        this.addButton(back);
+        //:: Back button
+        this.addButton(new GuiButtonExt(2, 10, 10, 20, 15, "<<"));
         this.addButton(exit);
         this.addButton(confirm);
 
@@ -67,27 +77,23 @@ public class DirectorySelectionMenu extends GuiScreen {
     @Override
     protected void actionPerformed(final GuiButton button) {
         switch (button.id) {
-            case 1: {
+            case 1:
                 this.mc.displayGuiScreen(this.parentIn);
-            }
-            break;
+                break;
 
-            case 2: {
+            case 2:
                 folderListIn.back();
-            }
-            break;
+                break;
 
-            case 3: {
+            case 3:
                 applySelectionTo.setPath(this.folderListIn.currentPath());
                 applySelectionTo.setUniquePath(this.folderListIn.uniquePath());
                 this.mc.displayGuiScreen(this.parentIn);
-            }
-            break;
+                break;
 
-            default: {
+            default:
                 // This should never be reached
-            }
-            break;
+                break;
         }
     }
 

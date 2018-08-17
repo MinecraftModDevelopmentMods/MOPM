@@ -17,6 +17,15 @@ import zed.mopm.util.PathFormatter;
 import zed.mopm.util.References;
 
 public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExtended.IGuiListEntry, IFolderPath, IDrawableListEntry, Comparable<WorldEntry> {
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constants:---------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Fields:------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     private WorldSummary summary;
     private WorldList worldList;
     private String pathToContainingDirectory;
@@ -79,21 +88,6 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
         this.y = y;
     }
 
-    @Override
-    public boolean mousePressed(final int slotIndex, final int mouseX, final int mouseY, final int mouseEvent, final int relativeX, final int relativeY) {
-        return super.mousePressed(slotIndex, mouseX, mouseY, mouseEvent, relativeX, relativeY);
-    }
-
-    @Override
-    public void mouseReleased(final int slotIndex, final int x, final int y, final int mouseEvent, final int relativeX, final int relativeY) {
-        super.mouseReleased(slotIndex, x, y, mouseEvent, relativeX, relativeY);
-    }
-
-    @Override
-    public void updatePosition(final int slotIndex, final int x, final int y, final float partialTicks) {
-        super.updatePosition(slotIndex, x, y, partialTicks);
-    }
-
     //:: IFolderPath
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
@@ -128,7 +122,7 @@ public class WorldEntry extends GuiListWorldSelectionEntry implements GuiListExt
 
     @Override
     public boolean equals(final Object o) {
-        return !(o instanceof WorldEntry) ? false : mopmSaveData.getAbsolutePath().equals(((WorldEntry) o).mopmSaveData.getAbsolutePath());
+        return o instanceof WorldEntry &&  mopmSaveData.getAbsolutePath().equals(((WorldEntry) o).mopmSaveData.getAbsolutePath());
     }
 
     @Override

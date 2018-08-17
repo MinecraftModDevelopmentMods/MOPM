@@ -1,189 +1,117 @@
 package zed.mopm.gui.mutators;
 
-import jline.internal.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiCreateWorld;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
-import org.lwjgl.input.Keyboard;
-import zed.mopm.api.data.IFolderPath;
-import zed.mopm.data.WorldEntry;
-import zed.mopm.gui.lists.FolderList;
+import zed.mopm.api.gui.mutators.ICreatorMenu;
 import zed.mopm.util.MOPMLiterals;
 import zed.mopm.util.References;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.util.List;
 
-public class CreateWorldEntryMenu extends GuiCreateWorld implements IFolderPath {
-    private DirectorySelectionMenu selectDir;
+public class CreateWorldEntryMenu extends GuiCreateWorld implements ICreatorMenu {
 
-    private GuiButtonExt folderSelection;
-    private GuiTextField pathDisplay;
-    private String savePath;
-    private File mopmSaveFile;
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constants:---------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Fields:------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Constructors:------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    public CreateWorldEntryMenu(final GuiScreen parentScreen, final FolderList<WorldEntry> folderList) {
+    public CreateWorldEntryMenu(final GuiScreen parentScreen) {
         super(parentScreen);
-        selectDir = new DirectorySelectionMenu(this, folderList);
-
-        pathDisplay = new GuiTextField(1, Minecraft.getMinecraft().fontRenderer, 0, 163, 150, 20);
-        pathDisplay.setMaxStringLength(Integer.MAX_VALUE);
-        mopmSaveFile = null;
-        this.setPath(folderList.currentPath());
-        this.setUniquePath(folderList.uniquePath());
+        this.mc = parentScreen.mc;
+        this.fontRenderer = this.mc.fontRenderer;
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----Overridden Methods:------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    /**
-     *
-     */
-    @Override
-    public void initGui() {
-        super.initGui();
-        Keyboard.enableRepeatEvents(true);
+    //:: ICreatorMenu
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-        pathDisplay.x = this.width / 2 - 50;
-        folderSelection = new GuiButtonExt(100, this.width / 2 - 100, 163, 45, 20, "Select");
-        this.addButton(folderSelection);
+    @Override
+    public GuiTextField getTextField() {
+        return new GuiTextField(1, Minecraft.getMinecraft().fontRenderer, 0, 163, 150, 20);
     }
 
-    /**
-     *
-     * @param mouseX
-     * @param mouseY
-     * @param partialTicks
-     */
     @Override
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        this.pathDisplay.drawTextBox();
+    public GuiButtonExt getSelectionButton(final int screenWidth) {
+        return new GuiButtonExt(100, screenWidth / 2 - 100, 163, 45, 20, "Select");
     }
 
-    /**
-     *
-     * @param button
-     * @throws IOException
-     */
     @Override
-    protected void actionPerformed(final GuiButton button) throws IOException {
-        switch (button.id) {
+    public List<GuiButton> getButtons() {
+        return this.buttonList;
+    }
 
-            case 0: {
-                String worldDirName;
-                try {
-                    Field field = GuiCreateWorld.class.getDeclaredField("saveDirName");
-                    field.setAccessible(true);
-                    worldDirName = (String) field.get(this);
+    @Override
+    public void handleActionPerformed(final GuiButton btn, final CreateEntryMenu entryMenu) throws IOException {
+        switch (btn.id) {
+            case CREATION_ID:
+                writeSaveData(entryMenu.getMopmSaveFile(), entryMenu.getSavePath());
+                break;
 
-                    mopmSaveFile = Minecraft.getMinecraft().getSaveLoader().getFile(worldDirName, MOPMLiterals.MOPM_SAVE_DAT);
-                    mopmSaveFile.getParentFile().mkdirs();
-                    try (DataOutputStream write = new DataOutputStream(new FileOutputStream(mopmSaveFile))) {
-                        write.write(this.savePath.getBytes());
-                    }
-                } catch (NoSuchFieldException | IllegalAccessException | IOException e) {
-                    References.LOG.info("", e);
-                }
-            }
-            break;
+            case TOGGLE_DISPLAY_ID:
+                entryMenu.toggleDisplay();
+                break;
 
-            // 100: Select the directory the world should be stored in.
-            case 100: {
-                this.mc.displayGuiScreen(this.selectDir);
-            }
-            break;
-
-            case 3: {
-                this.pathDisplay.setVisible(!this.pathDisplay.getVisible());
-                this.folderSelection.visible = !this.folderSelection.visible;
-            }
-            break;
-
-            default: {
-                /* This should never be reached!
-                 * if this is reached, there was a button with a wrong id.
+            default:
+                /*
+                 * This should not be reached
                  */
-            }
-            break;
+                break;
         }
 
-        super.actionPerformed(button);
+        super.actionPerformed(btn);
+
     }
 
-    /**
-     *
-     * @param typedChar
-     * @param keyCode
-     * @throws IOException
-     */
     @Override
-    protected void keyTyped(final char typedChar, final int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
-        if (this.pathDisplay.isFocused() && keyCode == 203 || keyCode == 205 || GuiScreen.isKeyComboCtrlA(keyCode) || GuiScreen.isKeyComboCtrlC(keyCode)) {
-            this.pathDisplay.textboxKeyTyped(typedChar, keyCode);
-        }
+    public void doKeyTyped(final char typedChar, final int keyCode) throws IOException {
+        //this.keyTyped(typedChar, keyCode);
     }
 
-    /**
-     *
-     * @param mouseX
-     * @param mouseY
-     * @param mouseButton
-     * @throws IOException
-     */
     @Override
-    protected void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-        this.pathDisplay.mouseClicked(mouseX, mouseY, mouseButton);
+    public void doMouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        //this.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
-    /**
-     *
-     * @param path
-     */
     @Override
-    public void setPath(final String path) {
-        pathDisplay.setText("Dir: " + path);
-    }
-
-    /**
-     *
-     * @param path
-     */
-    @Override
-    public void setUniquePath(final String path) {
-        savePath = path;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String getPathToDir() {
-        return pathDisplay.getText().substring("Dir: ".length());
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    @Nullable
-    public File getMopmSaveFile() {
-        return mopmSaveFile;
+    public void doMouseReleased(int mouseX, int mouseY, int state) {
+        //this.mouseReleased(mouseX, mouseY, state);
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----This:--------------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    private void writeSaveData(File mopmSaveFile, final String savePath) {
+        String worldDirName;
+        try {
+            Field field = GuiCreateWorld.class.getDeclaredField("saveDirName");
+            field.setAccessible(true);
+            worldDirName = (String) field.get(this);
+
+            mopmSaveFile = Minecraft.getMinecraft().getSaveLoader().getFile(worldDirName, MOPMLiterals.MOPM_SAVE_DAT);
+            mopmSaveFile.getParentFile().mkdirs();
+            try (DataOutputStream write = new DataOutputStream(new FileOutputStream(mopmSaveFile))) {
+                write.write(savePath.getBytes());
+            }
+        } catch (NoSuchFieldException | IllegalAccessException | IOException e) {
+            References.LOG.info("", e);
+        }
+    }
 }

@@ -7,9 +7,22 @@ import zed.mopm.api.data.ServerDataStatus;
 import zed.mopm.util.MOPMLiterals;
 
 public class ServerSaveData {
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constants:---------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Fields:------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     private ServerDataStatus status = ServerDataStatus.NONE;
     private ServerData data;
     private String savePath;
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constructors:------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     public ServerSaveData(final ServerData data, final String savePath) {
         this.data = data;
@@ -27,25 +40,16 @@ public class ServerSaveData {
         this.savePath = "";
     }
 
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----This:--------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     public ServerData getServerData() {
         return this.data;
     }
 
     public String getSavePath() {
         return this.savePath;
-    }
-
-    public void setSavePath(final String path) {
-        this.savePath = path;
-    }
-
-    public void copyFrom(final ServerSaveData newSave) {
-        this.savePath = newSave.savePath;
-        this.data = newSave.data;
-    }
-
-    public void changeStatus(ServerDataStatus status) {
-        this.status = status;
     }
 
     public ServerDataStatus getStatus() {
@@ -56,5 +60,18 @@ public class ServerSaveData {
         final NBTTagCompound nbt = this.data.getNBTCompound();
         nbt.setTag(MOPMLiterals.MOPM_SAVE, new NBTTagString(this.savePath));
         return nbt;
+    }
+
+    public void setSavePath(final String path) {
+        this.savePath = path;
+    }
+
+    public void changeStatus(ServerDataStatus status) {
+        this.status = status;
+    }
+
+    public void copyFrom(final ServerSaveData newSave) {
+        this.savePath = newSave.savePath;
+        this.data = newSave.data;
     }
 }

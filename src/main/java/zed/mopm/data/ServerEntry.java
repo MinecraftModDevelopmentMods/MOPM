@@ -13,6 +13,14 @@ import java.io.File;
 
 public class ServerEntry extends ServerListEntryNormal implements GuiListExtended.IGuiListEntry, IFolderPath, IDrawableListEntry {
 
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constants:---------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Fields:------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     private int x = 0;
     private int y = 0;
 
@@ -20,9 +28,13 @@ public class ServerEntry extends ServerListEntryNormal implements GuiListExtende
     private String lastIcon;
 
     private MultiplayerMenu owner;
-    private int listIndex;
     private String pathToContainingDirectory;
     private boolean lan;
+    private int listIndex;
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constructors:------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     public ServerEntry(final GuiMultiplayer ownerIn, final ServerSaveData serverIn, final int listIndex) {
         super(ownerIn, serverIn.getServerData());
@@ -32,6 +44,13 @@ public class ServerEntry extends ServerListEntryNormal implements GuiListExtende
         this.listIndex = listIndex;
         this.lan = false;
     }
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Overridden Methods:------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:: IGuiListEntry/ServerListEntryNormal
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     @Override
     public void updatePosition(final int slotIndex, final int x, final int y, final float partialTicks) {
@@ -50,15 +69,8 @@ public class ServerEntry extends ServerListEntryNormal implements GuiListExtende
         }
     }
 
-    @Override
-    public boolean mousePressed(final int slotIndex, final int mouseX, final int mouseY, final int mouseEvent, final int relativeX, final int relativeY) {
-        return super.mousePressed(slotIndex, mouseX, mouseY, mouseEvent, relativeX, relativeY);
-    }
-
-    @Override
-    public void mouseReleased(final int slotIndex, final int x, final int y, final int mouseEvent, final int relativeX, final int relativeY) {
-    	super.mouseReleased(slotIndex, x, y, mouseEvent, relativeX, relativeY);
-    }
+    //:: IFolderPath
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     @Override
     public void setPath(final String path) {
@@ -82,14 +94,44 @@ public class ServerEntry extends ServerListEntryNormal implements GuiListExtende
         return null;
     }
 
+    //:: IDrawableListEntry
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    @Override
+    public int getX() {
+        return this.x;
+    }
+
+    @Override
+    public int getY() {
+        return this.y;
+    }
+
+    @Override
+    public String drawableText() {
+        return this.server.getServerData().serverName;
+    }
+
+    //:: Object
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     @Override
     public boolean equals(final Object o) {
         if (o instanceof ServerEntry) {
             final ServerEntry obj = (ServerEntry) o;
-            return this.listIndex == obj.listIndex && this.pathToContainingDirectory.equals(obj.pathToContainingDirectory);
+            return this.server == obj.server || this.listIndex == obj.listIndex && this.pathToContainingDirectory.equals(obj.pathToContainingDirectory);
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return this.listIndex;
+    }
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----This:--------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     public void updateList() {
         this.owner.getServers().hardUpdate();
@@ -107,18 +149,7 @@ public class ServerEntry extends ServerListEntryNormal implements GuiListExtende
         return this.lan;
     }
 
-    @Override
-    public int getX() {
-        return this.x;
-    }
-
-    @Override
-    public int getY() {
-        return this.y;
-    }
-
-    @Override
-    public String drawableText() {
-        return this.server.getServerData().serverName;
+    public int getListIndex() {
+        return this.listIndex;
     }
 }

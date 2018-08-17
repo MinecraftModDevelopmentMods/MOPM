@@ -18,6 +18,15 @@ import java.util.*;
  * @param <K>
  */
 public class FolderEntry<K> {
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constants:---------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Fields:------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     private int depth;
     private int index;
     private String name;
@@ -457,12 +466,32 @@ public class FolderEntry<K> {
         final ISaveFormat saveLoader = mc.getSaveLoader();
 
         for (final WorldSummary summary : saveLoader.getSaveList()) {
-            if (!writeWorldToBase(saveLoader.getFile(summary.getFileName(), MOPMLiterals.MOPM_SAVE_DAT))) {
+            final File mopmSaveFile = saveLoader.getFile(summary.getFileName(), MOPMLiterals.MOPM_SAVE_DAT);
+            if (!writeWorldToBase(mopmSaveFile)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    private static boolean ensureMopmWorldSaveFile() {
+        final Minecraft mc = Minecraft.getMinecraft();
+        final ISaveFormat saveLoader = mc.getSaveLoader();
+
+        try {
+            for (final WorldSummary summary : saveLoader.getSaveList()) {
+                final File mopmSaveFile = saveLoader.getFile(summary.getFileName(), MOPMLiterals.MOPM_SAVE_DAT);
+                if (!mopmSaveFile.exists() && !writeWorldToBase(mopmSaveFile)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        catch (AnvilConverterException e) {
+            References.LOG.error("", e);
+            return false;
+        }
     }
 
     /**
@@ -472,9 +501,7 @@ public class FolderEntry<K> {
      */
     private static boolean writeServersToBase(final FolderEntry<ServerEntry> folder) {
         for (final ServerEntry entry : folder.entries) {
-            if (!writeServerToBase(entry)) {
-                return false;
-            }
+            writeServerToBase(entry);
         }
         return true;
     }
@@ -525,8 +552,8 @@ public class FolderEntry<K> {
     }
 
     public void softLoad(final File loadFrom) {
+        ensureMopmWorldSaveFile();
         try (BufferedReader reader = new BufferedReader(new FileReader(loadFrom))) {
-
             if (!reader.readLine().equals(MOPMLiterals.BASE_DIR + ":")) {
                 throw new IOException();
             }

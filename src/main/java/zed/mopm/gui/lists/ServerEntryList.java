@@ -2,7 +2,6 @@ package zed.mopm.gui.lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ServerSelectionList;
-import net.minecraft.client.multiplayer.ServerList;
 import zed.mopm.api.gui.lists.IListType;
 import zed.mopm.api.gui.lists.IModifiableList;
 import zed.mopm.data.ServerEntry;
@@ -17,33 +16,65 @@ import java.util.List;
 
 public class ServerEntryList extends ServerSelectionList implements IModifiableList, IListType<ServerEntry> {
 
-    private final ServerSaveLoadUtils serverListDetails;
-    private final List<ServerEntry> serverEntryList;
-    private final List<ServerEntry> relevantServers;
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constants:---------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Fields:------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    private final ServerSaveLoadUtils entryListDetails;
+    private final List<ServerEntry> relevantEntries;
     private final ModifiableMenu<MultiplayerMenu, ServerEntry, ServerEntryList> serverMenu;
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constructors:------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     public ServerEntryList(final ModifiableMenu<MultiplayerMenu, ServerEntry, ServerEntryList> serverSelection, final Minecraft clientIn, final int slotHeightIn) {
         super(serverSelection.getInvokeScreen(), clientIn, 0, 0, 0, 0, slotHeightIn);
 
-        serverListDetails = new ServerSaveLoadUtils(clientIn);
+        entryListDetails = new ServerSaveLoadUtils(clientIn);
         this.serverMenu = serverSelection;
-        relevantServers = new ArrayList<>();
-        serverEntryList = new ArrayList<>();
+        relevantEntries = new ArrayList<>();
     }
 
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Overridden Methods:------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:: ServerSelectionList
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    /**
+     * Gets the list entry from the displayed list of entries.
+     *
+     * @param index The index in the list of displayed list entries. This corresponds with the selected slot index.
+     * @return returns the server entry at the displayed index.
+     */
     @Override
     public ServerEntry getListEntry(final int index) {
-        return this.relevantServers.get(index);
+        return this.relevantEntries.get(index);
     }
 
+    /**
+     * Gets the count of the currently displayed entries.
+     *
+     * @return returns the number of displayed entries.
+     */
     @Override
     protected int getSize() {
-        return this.relevantServers.size();
+        return this.relevantEntries.size();
     }
+
+    //:: GuiListExtended
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     @Override
     public boolean mouseClicked(final int mouseX, final int mouseY, final int mouseEvent) {
-        if (mouseEvent == 1 && this.getSlotIndexFromScreenCoords(mouseX, mouseY) != -1) {
+        this.serverMenu.getInvokeScreen().selectServer(this.getSlotIndexFromScreenCoords(mouseX, mouseY));
+        if (mouseEvent == 1 && this.getSelected() != -1) {
             this.mc.displayGuiScreen(new EditDirectory<>(this.serverMenu, mouseX, mouseY, false, this));
             return true;
         } else {
@@ -51,9 +82,12 @@ public class ServerEntryList extends ServerSelectionList implements IModifiableL
         }
     }
 
+    //:: IModifiableList
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     @Override
     public void rename(final int entryIndex, final String name) {
-    	relevantServers.get(entryIndex).getServer().getServerData().serverName = name;
+    	this.getListEntry(entryIndex).getServer().getServerData().serverName = name;
     	this.saveList();
     }
 
@@ -63,8 +97,11 @@ public class ServerEntryList extends ServerSelectionList implements IModifiableL
             this.setSelectedSlotIndex(entryIndex);
             this.getListEntry(entryIndex).removeServer(this.serverMenu.getDirectoryList());
             this.deleteEntryAt(entryIndex);
-            this.updateServers();
             this.saveList();
+            this.setSelectedSlotIndex(entryIndex - 1);
+        }
+        if (this.relevantEntries.isEmpty()) {
+            this.serverMenu.getInvokeScreen().selectServer(-1);
         }
     }
 
@@ -76,65 +113,63 @@ public class ServerEntryList extends ServerSelectionList implements IModifiableL
         this.mc.displayGuiScreen(new DirectorySelectionMenu(this.serverMenu, entry, new FolderList(this.serverMenu.getDirectoryList())));
     }
 
+    //:: IListType
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     @Override
     public void refresh() {
-        this.updateServers();
-        this.serverMenu.getDirectoryList().populateDirectoryList(this.serverEntryList);
+        this.serverMenu.getDirectoryList().populateDirectoryList(this.entryListDetails.getDetails(this.serverMenu.getInvokeScreen()));
     }
 
     @Override
     public void display(final List<ServerEntry> entries) {
-        relevantServers.clear();
-        relevantServers.addAll(entries);
+        relevantEntries.clear();
+        relevantEntries.addAll(entries);
     }
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----This:--------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     public ServerSaveData getSelectedServer() {
         return this.getListEntry(this.getSelected()).getServer();
     }
 
-    public ServerList getList() {
-        final ServerList copy = new ServerList(this.mc);
-        for (ServerEntry entry : this.serverEntryList) {
-            copy.addServerData(entry.getServerData());
-        }
-        return copy;
-    }
-
     public void editSelectedIndex(final ServerSaveData data) {
-        if (this.selectedElement != -1) {
-
+        if (this.getSelected() != -1) {
             final ServerSaveData selected = this.getSelectedServer();
             final String oldPath = selected.getSavePath();
             if (!oldPath.equals(data.getSavePath())) {
                 this.getListEntry(this.getSelected()).removeServer(this.serverMenu.getDirectoryList());
             }
             selected.copyFrom(data);
+            this.entryListDetails.replace(this.getWholeIndex(this.getSelected()), selected);
         }
     }
 
     private void deleteEntryAt(final int entryIndex) {
-        this.serverListDetails.removeSaveData(this.serverEntryList.indexOf(this.relevantServers.get(entryIndex)));
-        this.relevantServers.remove(entryIndex);
+        this.entryListDetails.removeSaveData(this.getWholeIndex(entryIndex));
+        this.relevantEntries.remove(entryIndex);
+        this.hardUpdate();
     }
 
     public void addServerSave(final ServerSaveData serverData) {
-        this.serverListDetails.addSaveData(serverData);
+        this.entryListDetails.addSaveData(serverData);
     }
 
     public void loadList() {
-        this.serverListDetails.loadServerList();
+        this.entryListDetails.loadServerList();
     }
 
     public void saveList() {
-        this.serverListDetails.save();
-    }
-
-    public void updateServers() {
-        this.serverEntryList.clear();
-        this.serverEntryList.addAll(this.serverListDetails.getDetails(this.serverMenu.getInvokeScreen()));
+        this.entryListDetails.save();
     }
 
     public void hardUpdate() {
         this.serverMenu.refreshDirectoryEntryList();
+    }
+
+    private int getWholeIndex(final int partialIndex) {
+        return this.relevantEntries.get(partialIndex).getListIndex();
     }
 }

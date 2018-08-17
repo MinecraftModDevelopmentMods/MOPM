@@ -22,8 +22,17 @@ import java.util.Collections;
 import java.util.List;
 
 public class WorldList extends GuiListWorldSelection implements IModifiableList, IListType<WorldEntry> {
-    private List<WorldEntry> worldEntryList;
-    private List<WorldEntry> relevantWorlds;
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constants:---------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Fields:------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    private List<WorldEntry> entryList;
+    private List<WorldEntry> relevantEntries;
     private ModifiableMenu<SinglePlayerMenu, WorldEntry, WorldList> worldMenu;
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
@@ -33,8 +42,8 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList,
     public WorldList(final ModifiableMenu<SinglePlayerMenu, WorldEntry, WorldList> worldSelection, final Minecraft clientIn, final int slotHeightIn) {
         super(worldSelection.getInvokeScreen(), clientIn, 0, 0, 0, 0, slotHeightIn);
         worldMenu = worldSelection;
-        relevantWorlds = new ArrayList<>();
-        worldEntryList = new ArrayList<>();
+        relevantEntries = new ArrayList<>();
+        entryList = new ArrayList<>();
         refreshList();
     }
 
@@ -47,8 +56,8 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList,
 
     @Override
     public void refreshList() {
-        if (this.worldEntryList != null && this.worldMenu != null) {
-            this.worldEntryList.clear();
+        if (this.entryList != null && this.worldMenu != null) {
+            this.entryList.clear();
             ISaveFormat isaveformat = this.mc.getSaveLoader();
             List<WorldSummary> list;
 
@@ -63,10 +72,10 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList,
             Collections.sort(list);
 
             for (WorldSummary worldsummary : list) {
-                this.worldEntryList.add(new WorldEntry(this, worldsummary, this.mc.getSaveLoader()));
+                this.entryList.add(new WorldEntry(this, worldsummary, this.mc.getSaveLoader()));
             }
 
-            worldMenu.getDirectoryList().populateDirectoryList(worldEntryList);
+            worldMenu.getDirectoryList().populateDirectoryList(entryList);
         }
     }
 
@@ -88,12 +97,12 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList,
 
     @Override
     public WorldEntry getListEntry(final int index) {
-        return this.relevantWorlds.get(index);
+        return this.relevantEntries.get(index);
     }
 
     @Override
     protected int getSize() {
-        return this.relevantWorlds.size();
+        return this.relevantEntries.size();
     }
 
     //:: IModifiableList
@@ -129,8 +138,8 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList,
     @Override
     public void display(final List<WorldEntry> entries) {
         Collections.sort(entries);
-        relevantWorlds.clear();
-        relevantWorlds.addAll(entries);
+        relevantEntries.clear();
+        relevantEntries.addAll(entries);
     }
 
 
@@ -139,11 +148,11 @@ public class WorldList extends GuiListWorldSelection implements IModifiableList,
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     public WorldEntry getFullListEntry(final int index) {
-        return this.worldEntryList.get(index);
+        return this.entryList.get(index);
     }
 
     protected int getFullSize() {
-        return this.worldEntryList.size();
+        return this.entryList.size();
     }
 
     public int getSelectedIndex() {

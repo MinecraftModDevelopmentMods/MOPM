@@ -11,7 +11,6 @@ import zed.mopm.api.data.*;
 import zed.mopm.api.gui.*;
 import zed.mopm.api.gui.lists.IListType;
 import zed.mopm.api.gui.lists.IModifiableList;
-import zed.mopm.data.ServerEntry;
 import zed.mopm.data.WorldEntry;
 import zed.mopm.gui.buttons.ToolTipButton;
 import zed.mopm.gui.lists.FolderList;
@@ -25,6 +24,10 @@ import zed.mopm.util.References;
 import java.io.IOException;
 
 public class ModifiableMenu<K extends GuiScreen & IMenuType, J extends GuiListExtended.IGuiListEntry & IFolderPath, L extends GuiListExtended & IModifiableList & IListType<J>> extends GuiScreen implements IFolderMenu {
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constants:---------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     private static final int CREATE_ENTRY_ID = 3;
     private static final int SUBDIR_BTN_ID = 99;
@@ -51,6 +54,10 @@ public class ModifiableMenu<K extends GuiScreen & IMenuType, J extends GuiListEx
 
     private static final int BASE_64 = 64;
 
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Fields:------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     private K invokeScreen;
 
     private FolderList<J> directories;
@@ -64,6 +71,10 @@ public class ModifiableMenu<K extends GuiScreen & IMenuType, J extends GuiListEx
 
     private GuiTextField directoryDisplay;
 
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constructors:------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     public ModifiableMenu(final K wrappedScreenIn, final Minecraft clientIn) {
         this.invokeScreen = wrappedScreenIn;
         this.listFocus = SelectedList.ENTRY_LIST;
@@ -75,6 +86,13 @@ public class ModifiableMenu<K extends GuiScreen & IMenuType, J extends GuiListEx
 
         this.directories = new FolderList<>(this, DIR_LIST_WIDTH, 0, DIR_LIST_X, DIR_LIST_SLOT_HEIGHT, clientIn.gameDir);
     }
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Overridden Methods:------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:: GuiScreen
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     @Override
     public void initGui() {
@@ -267,6 +285,9 @@ public class ModifiableMenu<K extends GuiScreen & IMenuType, J extends GuiListEx
         Keyboard.enableRepeatEvents(false);
     }
 
+    //:: IFolderMenu
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     @Override
     public FolderList<J> getDirectoryList() {
         return this.directories;
@@ -277,6 +298,10 @@ public class ModifiableMenu<K extends GuiScreen & IMenuType, J extends GuiListEx
         this.entrySelectionList.refresh();
         this.entrySelectionList.display(this.directories.getFolder().getEntries());
     }
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----This:--------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     private void toggleDirectoryDisplay() {
         if (this.directoryDisplay.width > MOPMLiterals.BASE_FIVE) {

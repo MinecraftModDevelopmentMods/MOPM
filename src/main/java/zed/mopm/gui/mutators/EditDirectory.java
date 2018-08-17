@@ -13,11 +13,15 @@ import zed.mopm.gui.buttons.ContextButton;
 import java.io.IOException;
 
 public class EditDirectory<T extends GuiListExtended & IModifiableList> extends GuiScreen {
-    //:: Possible entries
-    /* Open
-     * Rename
-     * Delete
-     */
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constants:---------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Fields:------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     private GuiScreen parentIn;
     private int entryIndex;
     private boolean canClose;
@@ -28,6 +32,10 @@ public class EditDirectory<T extends GuiListExtended & IModifiableList> extends 
     private ContextButton move;
 
     private GuiTextField changeName;
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constructors:------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     public EditDirectory(final GuiScreen parentIn, final int mouseX, final int mouseY, final boolean doClose, final T list) {
         this.parentIn = parentIn;
@@ -49,6 +57,13 @@ public class EditDirectory<T extends GuiListExtended & IModifiableList> extends 
     public EditDirectory(final GuiScreen parentIn, final int mouseX, final int mouseY, final T list) {
         this(parentIn, mouseX, mouseY, true, list);
     }
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Overridden Methods:------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:: GuiScreen
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     @Override
     public void initGui() {
@@ -72,24 +87,21 @@ public class EditDirectory<T extends GuiListExtended & IModifiableList> extends 
     protected void actionPerformed(final GuiButton button) {
         Editor action = Editor.values()[button.id];
         switch (action) {
-            case DELETE: {
+            case DELETE:
                 this.modifiableList.delete(this.entryIndex);
                 if (canClose) {
                     closeGui();
                 }
-            }
-            break;
+                break;
 
-            case RENAME: {
+            case RENAME:
                 this.changeName.setVisible(true);
                 this.changeName.setFocused(true);
-            }
-            break;
+                break;
 
-            case CHANGE_DIRECTORY: {
+            case CHANGE_DIRECTORY:
                 this.modifiableList.changeDir(this.entryIndex);
-            }
-            break;
+                break;
         }
 
         this.delete.visible = false;
@@ -132,16 +144,9 @@ public class EditDirectory<T extends GuiListExtended & IModifiableList> extends 
         this.changeName.updateCursorCounter();
     }
 
-    /**
-     * This operation should be used if there is an external operation that should override
-     * when the context menu closes. Otherwise, gui closing will be handled by the context
-     * menu.
-     *
-     * This method sets canClose to false.
-     */
-    public void toggleClose() {
-        this.canClose = false;
-    }
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----This:--------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     private void closeGui() {
         this.mc.displayGuiScreen(parentIn);

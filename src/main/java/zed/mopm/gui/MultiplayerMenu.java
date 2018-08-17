@@ -2,7 +2,6 @@ package zed.mopm.gui;
 
 import net.minecraft.client.gui.*;
 import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.resources.I18n;
 import zed.mopm.api.data.ServerDataStatus;
 import zed.mopm.api.gui.IMenuType;
 import zed.mopm.api.gui.lists.IListType;
@@ -10,18 +9,30 @@ import zed.mopm.data.ServerEntry;
 import zed.mopm.data.ServerSaveData;
 import zed.mopm.gui.lists.FolderList;
 import zed.mopm.gui.lists.ServerEntryList;
+import zed.mopm.gui.mutators.CreateEntryMenu;
 import zed.mopm.gui.mutators.CreateServerEntryMenu;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
 
-    private static final int EDITING_ID = 7;
-    private static final int JOIN_ID = 1;
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constants:---------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     private static final int CANCEL_ID = 0;
+    private static final int JOIN_ID = 1;
     private static final int DELETE_ID = 2;
-    private static final int REFRESH_ID = 8;
     private static final int DIRECT_CONN_ID = 4;
+    private static final int EDITING_ID = 7;
+    private static final int REFRESH_ID = 8;
+
+    private static final List<Integer> ENABLED_BUTTONS = Arrays.asList(new Integer(1), new Integer(2), new Integer(7));
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Fields:------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     private ServerEntryList serverList;
     private ServerSaveData saveData;
@@ -41,10 +52,12 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
     //-----Overridden Methods:------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
+    //:: GuiMultiplayer
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     @Override
     public void initGui() {
         super.initGui();
-        this.selectServer(-1);
     }
 
     protected void actionPerformed(final GuiButton button, final ModifiableMenu menu) {
@@ -52,7 +65,7 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
             case EDITING_ID:
                 this.saveData.changeStatus(ServerDataStatus.EDITING);
                 this.saveData.copyFrom(this.serverList.getSelectedServer());
-                this.mc.displayGuiScreen(new CreateServerEntryMenu(menu, this.saveData, new FolderList(menu.getDirectoryList())));
+                this.mc.displayGuiScreen(new CreateEntryMenu<CreateServerEntryMenu, ServerEntry>(new CreateServerEntryMenu(menu, this.saveData), new FolderList<>(menu.getDirectoryList())));
                 break;
 
             case JOIN_ID:
@@ -84,46 +97,6 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
     }
 
     @Override
-    public void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) {
-        //:: do nothing
-        // - Override this so the wrapper gui handles all mouse input
-    }
-
-    @Override
-    public void mouseReleased(final int mouseX, final int mouseY, final int mouseButton) {
-        //:: do nothing
-        // - Override this so the wrapper gui handles all mouse input
-    }
-
-    @Override
-    public void connectToSelected() {
-        final int selected = this.serverList.getSelected();
-        final ServerEntry entry = selected < 0 ? null : this.serverList.getListEntry(selected);
-
-        if (entry == null) {
-            return;
-        }
-        else if (entry.isLan()) {
-            //:: TODO: Implement lan worlds
-        }
-        else {
-            this.connectToServer(entry.getServerData());
-        }
-    }
-
-    private void connectToServer(final ServerData server) {
-        net.minecraftforge.fml.client.FMLClientHandler.instance().connectToServer(this, server);
-    }
-
-    @Override
-    public void selectServer(final int index) {
-        if (listInitialized) {
-            this.serverList.setSelectedSlotIndex(index);
-            super.selectServer(index);
-        }
-    }
-
-    @Override
     public void confirmClicked(boolean result, int id) {
 
         if (result) {
@@ -145,7 +118,7 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
                     break;
 
                 case DIRECT_CONNECTING:
-                    this.connectToServer(this.saveData.getServerData());
+                    this.connect(this.saveData.getServerData());
                     break;
 
                 case NONE:
@@ -161,10 +134,56 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
     }
 
     @Override
+    public void connectToSelected() {
+        final int selected = this.serverList.getSelected();
+        final ServerEntry entry = selected < 0 ? null : this.serverList.getListEntry(selected);
+
+        if (entry != null) {
+            if (entry.isLan()) {
+                //:: TODO: Implement lan worlds
+            } else {
+                this.connect(entry.getServerData());
+            }
+        }
+    }
+
+    @Override
+    public void selectServer(final int index) {
+        if (listInitialized) {
+            this.serverList.setSelectedSlotIndex(index);
+            this.buttonList.stream()
+                    .filter(btn -> ENABLED_BUTTONS.contains(btn.id))
+                    .forEach(btn -> {
+                        if (index == -1) {
+                            btn.enabled = false;
+                        }
+                        else {
+                            btn.enabled = true;
+                        }
+                    });
+        }
+    }
+
+    @Override
+    public void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) {
+        //:: do nothing
+        // - Override this so the wrapper gui handles all mouse input
+    }
+
+    @Override
+    public void mouseReleased(final int mouseX, final int mouseY, final int mouseButton) {
+        //:: do nothing
+        // - Override this so the wrapper gui handles all mouse input
+    }
+
+    //:: IMenuType
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    @Override
     public void invokeEntryCreation(final ModifiableMenu menu) {
         this.saveData.changeStatus(ServerDataStatus.ADDING);
         this.saveData.copyFrom(new ServerSaveData());
-        this.mc.displayGuiScreen(new CreateServerEntryMenu(menu, this.saveData, new FolderList(menu.getDirectoryList())));
+        this.mc.displayGuiScreen(new CreateEntryMenu<CreateServerEntryMenu, ServerEntry>(new CreateServerEntryMenu(menu, this.saveData), new FolderList<>(menu.getDirectoryList())));
     }
 
     @Override
@@ -182,11 +201,19 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
         return this.buttonList;
     }
 
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----This:--------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     public ServerEntryList getServers() {
         return serverList;
     }
 
     public int getSelectedIndex() {
         return this.serverList.getSelected();
+    }
+
+    private void connect(final ServerData server) {
+        net.minecraftforge.fml.client.FMLClientHandler.instance().connectToServer(this, server);
     }
 }

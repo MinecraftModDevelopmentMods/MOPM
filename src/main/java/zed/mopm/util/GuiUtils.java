@@ -1,5 +1,6 @@
 package zed.mopm.util;
 
+import javafx.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -8,7 +9,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
+import javax.vecmath.Vector2d;
 import javax.vecmath.Vector4d;
+import javax.vecmath.Vector4f;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,15 +20,31 @@ public final class GuiUtils {
 
     private GuiUtils() { }
 
-    public static void drawVerticalGradientRect(final int left, final int top, final int right, final int bottom, final int startColor, final int endColor, final float zLevel) {
+    public static void drawGradientRect(final int left, final int top, final int right, final int bottom, final int startColor, final int endColor, final float zLevel, final boolean isVertical) {
+
         final float f = (float) (startColor >> 24 & 255) / 255.0F;
         final float f1 = (float) (startColor >> 16 & 255) / 255.0F;
         final float f2 = (float) (startColor >> 8 & 255) / 255.0F;
         final float f3 = (float) (startColor & 255) / 255.0F;
+        final Vector4f startColor4d = new Vector4f(f1, f2, f3, f);
+
         final float f4 = (float) (endColor >> 24 & 255) / 255.0F;
         final float f5 = (float) (endColor >> 16 & 255) / 255.0F;
         final float f6 = (float) (endColor >> 8 & 255) / 255.0F;
         final float f7 = (float) (endColor & 255) / 255.0F;
+        final Vector4f endColor4d = new Vector4f(f5, f6, f7, f4);
+
+        List<Pair<Vector2d, Vector4f>> datums = (isVertical) ? Arrays.asList(//:: Vertical
+                new Pair(new Vector2d(top, right), startColor4d),
+                new Pair(new Vector2d(top, left), startColor4d),
+                new Pair(new Vector2d(bottom, left), endColor4d),
+                new Pair(new Vector2d(bottom, right), endColor4d))
+                : Arrays.asList(//:: Horizontal
+                new Pair(new Vector2d(right, top), startColor4d),
+                new Pair(new Vector2d(left, top), startColor4d),
+                new Pair(new Vector2d(left, bottom), endColor4d),
+                new Pair(new Vector2d(right, bottom), endColor4d)
+                );
 
         GlStateManager.disableTexture2D();
         GlStateManager.enableBlend();
@@ -34,12 +53,16 @@ public final class GuiUtils {
         GlStateManager.shadeModel(7425);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
+
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        bufferbuilder.pos((double) top, (double) right, (double) zLevel).color(f1, f2, f3, f).endVertex();
-        bufferbuilder.pos((double) top, (double) left, (double) zLevel).color(f1, f2, f3, f).endVertex();
-        bufferbuilder.pos((double) bottom, (double) left, (double) zLevel).color(f5, f6, f7, f4).endVertex();
-        bufferbuilder.pos((double) bottom, (double) right, (double) zLevel).color(f5, f6, f7, f4).endVertex();
+        datums.stream().forEach( datum -> {
+            final Vector2d coords = datum.getKey();
+            final Vector4f color = datum.getValue();
+
+            bufferbuilder.pos(coords.getX(), coords.getY(), zLevel).color(color.getX(), color.getY(), color.getZ(), color.getW()).endVertex();
+        });
         tessellator.draw();
+
         GlStateManager.shadeModel(7424);
         GlStateManager.disableBlend();
         GlStateManager.enableAlpha();
@@ -47,31 +70,7 @@ public final class GuiUtils {
     }
 
     public static void drawGradientRect(final int left, final int top, final int right, final int bottom, final int startColor, final int endColor, final int zLevel) {
-    	  final float f = (float) (startColor >> 24 & 255) / 255.0F;
-    	  final float f1 = (float) (startColor >> 16 & 255) / 255.0F;
-    	  final float f2 = (float) (startColor >> 8 & 255) / 255.0F;
-    	  final float f3 = (float) (startColor & 255) / 255.0F;
-    	  final float f4 = (float) (endColor >> 24 & 255) / 255.0F;
-    	  final float f5 = (float) (endColor >> 16 & 255) / 255.0F;
-    	  final float f6 = (float) (endColor >> 8 & 255) / 255.0F;
-    	  final float f7 = (float) (endColor & 255) / 255.0F;
-        GlStateManager.disableTexture2D();
-        GlStateManager.enableBlend();
-        GlStateManager.disableAlpha();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.shadeModel(7425);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        bufferbuilder.pos((double) right, (double) top, (double) zLevel).color(f1, f2, f3, f).endVertex();
-        bufferbuilder.pos((double) left, (double) top, (double) zLevel).color(f1, f2, f3, f).endVertex();
-        bufferbuilder.pos((double) left, (double) bottom, (double) zLevel).color(f5, f6, f7, f4).endVertex();
-        bufferbuilder.pos((double) right, (double) bottom, (double) zLevel).color(f5, f6, f7, f4).endVertex();
-        tessellator.draw();
-        GlStateManager.shadeModel(7424);
-        GlStateManager.disableBlend();
-        GlStateManager.enableAlpha();
-        GlStateManager.enableTexture2D();
+        drawGradientRect(left, top, right, bottom, startColor, endColor, zLevel, false);
     }
 
     public static void drawTexturedRect(final double left, final double top, final double right, final double bottom, final double z, final int r, final int g, final int b, final int a, final int tint, final ResourceLocation rl, final Minecraft mc) {

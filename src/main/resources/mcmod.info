@@ -2,13 +2,13 @@
 {
   "modid": "mopm",
   "name": "More Organized Player Menus",
-  "description": "Example placeholder mod.",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
+  "description": "Organized!",
+  "version": "1.2.0-beta",
+  "mcversion": "1.12.2",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": ["Vase of Petunias"],
+  "credits": "",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

@@ -7,6 +7,7 @@ import zed.mopm.api.gui.lists.IListType;
 import zed.mopm.data.WorldEntry;
 import zed.mopm.gui.lists.FolderList;
 import zed.mopm.gui.lists.WorldList;
+import zed.mopm.gui.mutators.CreateEntryMenu;
 import zed.mopm.gui.mutators.CreateWorldEntryMenu;
 import zed.mopm.util.References;
 
@@ -14,6 +15,10 @@ import java.io.IOException;
 import java.util.List;
 
 public class SinglePlayerMenu extends GuiWorldSelection implements IMenuType {
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constants:---------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     private static final int EXIT_BTN_ID = 0;
     private static final int PLAY_BTN_ID = 1;
@@ -29,15 +34,18 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IMenuType {
         super(screenIn);
     }
 
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Overridden Methods:------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:: GuiWorldSelection
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     @Override
     public void postInit() {
         this.buttonList.clear();
         super.postInit();
     }
-
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
-    //-----Overridden Methods:------------------------------------------------------------------------//
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
     protected void actionPerformed(final GuiButton button, final FolderList<WorldEntry> directories, final WorldList selectionList) {
         try {
@@ -98,6 +106,9 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IMenuType {
         // - Override this so the wrapper gui handles all mouse input
     }
 
+    //:: IMenuType
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     @Override
     public void listInit(IListType list) {
         //:: do nothing
@@ -106,7 +117,8 @@ public class SinglePlayerMenu extends GuiWorldSelection implements IMenuType {
 
     @Override
     public void invokeEntryCreation(final ModifiableMenu menu) {
-        this.mc.displayGuiScreen(new CreateWorldEntryMenu(menu, new FolderList(menu.getDirectoryList())));
+        this.mc.displayGuiScreen(new CreateEntryMenu<CreateWorldEntryMenu, WorldEntry>(new CreateWorldEntryMenu(menu), new FolderList<>(menu.getDirectoryList())));
+        //this.mc.displayGuiScreen(new CreateWorldEntryMenu(menu, new FolderList(menu.getDirectoryList())));
     }
 
     @Override

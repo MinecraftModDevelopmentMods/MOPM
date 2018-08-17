@@ -2,8 +2,6 @@ package zed.mopm.gui.lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiListExtended;
-import net.minecraft.client.gui.GuiScreen;
-import zed.mopm.api.gui.IFolderMenu;
 import zed.mopm.api.data.IFolderPath;
 import zed.mopm.api.gui.lists.IModifiableList;
 import zed.mopm.data.FolderEntry;
@@ -22,6 +20,15 @@ import java.io.File;
 import java.util.*;
 
 public class FolderList<K extends IFolderPath> extends GuiListExtended implements IModifiableList {
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constants:---------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Fields:------------------------------------------------------------------------------------//
+    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+
     private ModifiableMenu container;
 
     private File saveFile;
@@ -107,7 +114,7 @@ public class FolderList<K extends IFolderPath> extends GuiListExtended implement
             currentDir = currentDir.stepDown(slotIndex);
             currentPath.push(currentDir.getUniqueName());
             if (!clone) {
-                ((IFolderMenu) container).refreshDirectoryEntryList();
+                container.refreshDirectoryEntryList();
             }
         }
     }
@@ -231,7 +238,7 @@ public class FolderList<K extends IFolderPath> extends GuiListExtended implement
             currentPath.pop();
             currentDir = getFolder();
             if (!clone) {
-                ((IFolderMenu) container).refreshDirectoryEntryList();
+                container.refreshDirectoryEntryList();
             }
         }
     }
