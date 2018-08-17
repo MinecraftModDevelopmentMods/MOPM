@@ -22,9 +22,6 @@ public class EventMenuOpened {
     private static ModifiableMenu<SinglePlayerMenu, WorldEntry, WorldList> worldSelection;
     private static ModifiableMenu<MultiplayerMenu, ServerEntry, ServerEntryList> serverSelection;
 
-    private static SinglePlayerMenu sspMenu;
-    private static MultiplayerMenu smpMenu;
-
     @SubscribeEvent
     public static void onGuiOpen(final GuiOpenEvent event) {
         GuiScreen gui = event.getGui();
@@ -43,13 +40,10 @@ public class EventMenuOpened {
     }
 
     public static void loadMenus(final GuiScreen parentIn) {
-        sspMenu = new SinglePlayerMenu(parentIn);
-        smpMenu = new MultiplayerMenu(parentIn);
-
-        worldSelection = new ModifiableMenu<>(sspMenu, Minecraft.getMinecraft());
+        worldSelection = new ModifiableMenu<>(new SinglePlayerMenu(parentIn), Minecraft.getMinecraft());
         worldSelection.setContainingList(new WorldList(worldSelection, Minecraft.getMinecraft(), 36));
 
-        serverSelection = new ModifiableMenu<>(smpMenu, Minecraft.getMinecraft());
+        serverSelection = new ModifiableMenu<>(new MultiplayerMenu(parentIn), Minecraft.getMinecraft());
         serverSelection.setContainingList(new ServerEntryList(serverSelection, Minecraft.getMinecraft(), 36));
     }
 }
