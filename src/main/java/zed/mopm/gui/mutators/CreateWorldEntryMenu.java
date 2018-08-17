@@ -61,7 +61,7 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements ICreatorMenu
     public void handleActionPerformed(final GuiButton btn, final CreateEntryMenu entryMenu) throws IOException {
         switch (btn.id) {
             case CREATION_ID:
-                writeSaveData(entryMenu.getMopmSaveFile(), entryMenu.getSavePath());
+                entryMenu.setMopmSaveFile(writeSaveData(entryMenu.getSavePath()));
                 break;
 
             case TOGGLE_DISPLAY_ID:
@@ -80,38 +80,40 @@ public class CreateWorldEntryMenu extends GuiCreateWorld implements ICreatorMenu
     }
 
     @Override
-    public void doKeyTyped(final char typedChar, final int keyCode) throws IOException {
-        //this.keyTyped(typedChar, keyCode);
+    public void doKeyTyped(final char typedChar, final int keyCode) {
+        //:: Todo: handle this better since this is only needed by CreateServerEntryMenu
     }
 
     @Override
-    public void doMouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        //this.mouseClicked(mouseX, mouseY, mouseButton);
+    public void doMouseClicked(int mouseX, int mouseY, int mouseButton) {
+        //:: Todo: handle this better since this is only needed by CreateServerEntryMenu
     }
 
     @Override
     public void doMouseReleased(int mouseX, int mouseY, int state) {
-        //this.mouseReleased(mouseX, mouseY, state);
+        //:: Todo: handle this better since this is only needed by CreateServerEntryMenu
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----This:--------------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
-    private void writeSaveData(File mopmSaveFile, final String savePath) {
+    private File writeSaveData(final String savePath) {
         String worldDirName;
         try {
             Field field = GuiCreateWorld.class.getDeclaredField("saveDirName");
             field.setAccessible(true);
             worldDirName = (String) field.get(this);
 
-            mopmSaveFile = Minecraft.getMinecraft().getSaveLoader().getFile(worldDirName, MOPMLiterals.MOPM_SAVE_DAT);
+            final File mopmSaveFile = Minecraft.getMinecraft().getSaveLoader().getFile(worldDirName, MOPMLiterals.MOPM_SAVE_DAT);
             mopmSaveFile.getParentFile().mkdirs();
             try (DataOutputStream write = new DataOutputStream(new FileOutputStream(mopmSaveFile))) {
                 write.write(savePath.getBytes());
             }
+            return mopmSaveFile;
         } catch (NoSuchFieldException | IllegalAccessException | IOException e) {
             References.LOG.info("", e);
         }
+        return new File(Minecraft.getMinecraft().gameDir, "");
     }
 }

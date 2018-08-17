@@ -151,4 +151,8 @@ public class CreateEntryMenu <K extends GuiScreen & ICreatorMenu, L extends IFol
         this.pathDisplay.setVisible(!this.pathDisplay.getVisible());
         this.selectBtn.visible = !this.selectBtn.visible;
     }
+
+    public void setMopmSaveFile(final File file) {
+        this.mopmSaveFile = file;
+    }
 }
