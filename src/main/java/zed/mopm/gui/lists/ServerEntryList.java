@@ -73,13 +73,18 @@ public class ServerEntryList extends ServerSelectionList implements IModifiableL
 
     @Override
     public boolean mouseClicked(final int mouseX, final int mouseY, final int mouseEvent) {
-        this.serverMenu.getInvokeScreen().selectServer(this.getSlotIndexFromScreenCoords(mouseX, mouseY));
-        if (mouseEvent == 1 && this.getSelected() != -1) {
+        this.serverMenu.getInvokeScreen().selectRelevantServer(this.getSlotIndexFromScreenCoords(mouseX, mouseY));
+        if (mouseEvent == 1 && this.getRelevantSelected() != -1) {
             this.mc.displayGuiScreen(new EditDirectory<>(this.serverMenu, mouseX, mouseY, false, this));
             return true;
         } else {
             return super.mouseClicked(mouseX, mouseY, mouseEvent);
         }
+    }
+
+    @Override
+    protected boolean isSelected(int slotIndex) {
+        return slotIndex == this.getRelevantSelected();
     }
 
     //:: IModifiableList
@@ -94,20 +99,20 @@ public class ServerEntryList extends ServerSelectionList implements IModifiableL
     @Override
     public void delete(final int entryIndex) {
         if (entryIndex != -1) {
-            this.setSelectedSlotIndex(entryIndex);
+            this.setRelevantServer(entryIndex);
             this.getListEntry(entryIndex).removeServer(this.serverMenu.getDirectoryList());
             this.deleteEntryAt(entryIndex);
             this.saveList();
-            this.setSelectedSlotIndex(entryIndex - 1);
+            this.setRelevantServer(entryIndex - 1);
         }
         if (this.relevantEntries.isEmpty()) {
-            this.serverMenu.getInvokeScreen().selectServer(-1);
+            this.serverMenu.getInvokeScreen().selectRelevantServer(-1);
         }
     }
 
     @Override
     public void changeDir(final int entryIndex) {
-        this.setSelectedSlotIndex(entryIndex);
+        this.setRelevantServer(entryIndex);
         final ServerEntry entry = this.getListEntry(entryIndex);
         entry.removeServer(this.serverMenu.getDirectoryList());
         this.mc.displayGuiScreen(new DirectorySelectionMenu(this.serverMenu, entry, new FolderList(this.serverMenu.getDirectoryList())));
@@ -123,27 +128,40 @@ public class ServerEntryList extends ServerSelectionList implements IModifiableL
 
     @Override
     public void display(final List<ServerEntry> entries) {
-        relevantEntries.clear();
-        relevantEntries.addAll(entries);
+        this.relevantEntries.clear();
+        this.relevantEntries.addAll(entries);
+        if (this.relevantEntries.isEmpty()) {
+            this.serverMenu.getInvokeScreen().selectRelevantServer(-1);
+        }
     }
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     //-----This:--------------------------------------------------------------------------------------//
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
 
+    public void setRelevantServer(final int index) {
+        this.selectedElement = index;
+    }
+
+    public int getRelevantSelected() {
+        return this.selectedElement;
+    }
+
     public ServerSaveData getSelectedServer() {
-        return this.getListEntry(this.getSelected()).getServer();
+        return this.getListEntry(this.getRelevantSelected()).getServer();
     }
 
     public void editSelectedIndex(final ServerSaveData data) {
-        if (this.getSelected() != -1) {
+        final int index = this.getRelevantSelected();
+        if (index != -1) {
             final ServerSaveData selected = this.getSelectedServer();
             final String oldPath = selected.getSavePath();
             if (!oldPath.equals(data.getSavePath())) {
-                this.getListEntry(this.getSelected()).removeServer(this.serverMenu.getDirectoryList());
+                this.getListEntry(index).removeServer(this.serverMenu.getDirectoryList());
             }
             selected.copyFrom(data);
-            this.entryListDetails.replace(this.getWholeIndex(this.getSelected()), selected);
+            selected.getServerData().pinged = false;
+            this.entryListDetails.replace(this.getWholeIndex(index), selected);
         }
     }
 

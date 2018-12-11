@@ -153,15 +153,17 @@ public class CreateServerEntryMenu extends GuiScreenAddServer implements ICreato
     }
 
     @Override
-    public void keyTyped(final char typedChar, final int keyCode) throws IOException {
-        this.nameField.textboxKeyTyped(typedChar, keyCode);
-        this.ipField.textboxKeyTyped(typedChar, keyCode);
+    public void keyTyped(final char typedChar, final int keyCode){
 
         if (keyCode == 15) {
-            this.nameField.setFocused(!this.nameField.isFocused());
+            final boolean oldfocus = this.nameField.isFocused();
+            final boolean newfocus = oldfocus;
+            this.nameField.setFocused(!oldfocus);
+            this.ipField.setFocused(newfocus);
         }
-        if (keyCode == 28 || keyCode == 156) {
-            this.actionPerformed(this.buttonList.get(0));
+        else {
+            this.nameField.textboxKeyTyped(typedChar, keyCode);
+            this.ipField.textboxKeyTyped(typedChar, keyCode);
         }
 
         (this.buttonList.get(0)).enabled = !this.ipField.getText().isEmpty() && this.ipField.getText().split(":").length > 0 && !this.nameField.getText().isEmpty();

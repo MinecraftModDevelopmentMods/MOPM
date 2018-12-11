@@ -1,6 +1,5 @@
 package zed.mopm.util;
 
-import javafx.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -8,6 +7,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector4d;
@@ -35,15 +35,15 @@ public final class GuiUtils {
         final Vector4f endColor4d = new Vector4f(f5, f6, f7, f4);
 
         List<Pair<Vector2d, Vector4f>> datums = (isVertical) ? Arrays.asList(//:: Vertical
-                new Pair(new Vector2d(top, right), startColor4d),
-                new Pair(new Vector2d(top, left), startColor4d),
-                new Pair(new Vector2d(bottom, left), endColor4d),
-                new Pair(new Vector2d(bottom, right), endColor4d))
+                Pair.of(new Vector2d(top, right), startColor4d),
+                Pair.of(new Vector2d(top, left), startColor4d),
+                Pair.of(new Vector2d(bottom, left), endColor4d),
+                Pair.of(new Vector2d(bottom, right), endColor4d))
                 : Arrays.asList(//:: Horizontal
-                new Pair(new Vector2d(right, top), startColor4d),
-                new Pair(new Vector2d(left, top), startColor4d),
-                new Pair(new Vector2d(left, bottom), endColor4d),
-                new Pair(new Vector2d(right, bottom), endColor4d)
+                Pair.of(new Vector2d(right, top), startColor4d),
+                Pair.of(new Vector2d(left, top), startColor4d),
+                Pair.of(new Vector2d(left, bottom), endColor4d),
+                Pair.of(new Vector2d(right, bottom), endColor4d)
                 );
 
         GlStateManager.disableTexture2D();

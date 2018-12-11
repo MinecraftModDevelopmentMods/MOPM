@@ -72,6 +72,7 @@ public class ServerSaveData {
 
     public void copyFrom(final ServerSaveData newSave) {
         this.savePath = newSave.savePath;
-        this.data = newSave.data;
+        this.data.copyFrom(newSave.getServerData());
+        this.data.serverMOTD = newSave.getServerData().serverMOTD;
     }
 }

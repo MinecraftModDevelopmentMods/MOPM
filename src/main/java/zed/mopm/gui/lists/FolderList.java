@@ -199,6 +199,7 @@ public class FolderList<K extends IFolderPath> extends GuiListExtended implement
 
     public void delete(final int entryIndex) {
         getFolder().removeDir(entryIndex);
+        save();
     }
 
     public void changeDir(final int entryIndex) {

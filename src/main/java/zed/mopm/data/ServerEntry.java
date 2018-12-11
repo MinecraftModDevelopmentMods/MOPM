@@ -59,7 +59,7 @@ public class ServerEntry extends ServerListEntryNormal implements GuiListExtende
 
     @Override
     public void drawEntry(final int slotIndex, final int x, final int y, final int listWidth, final int slotHeight, final int mouseX, final int mouseY, final boolean isSelected, final float partialTicks) {
-    	super.drawEntry(slotIndex, x, y, listWidth, slotHeight, mouseX, mouseY, isSelected, partialTicks);
+    	super.drawEntry(this.listIndex, x, y, listWidth, slotHeight, mouseX, mouseY, this.owner.getSelectedIndex() == this.listIndex, partialTicks);
     	this.x = x;
     	this.y = y;
     	final String iconData = this.server.getServerData().getBase64EncodedIconData();

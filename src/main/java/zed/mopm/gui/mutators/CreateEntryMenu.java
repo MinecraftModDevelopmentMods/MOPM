@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 import zed.mopm.api.data.IFolderPath;
+import zed.mopm.api.gui.mutators.CreatorMenu;
 import zed.mopm.api.gui.mutators.ICreatorMenu;
 import zed.mopm.gui.lists.FolderList;
 
@@ -59,6 +60,7 @@ public class CreateEntryMenu <K extends GuiScreen & ICreatorMenu, L extends IFol
 
     @Override
     public void initGui() {
+        this.buttonList.clear();
         this.invokeCreator.setWorldAndResolution(this.mc, this.width, this.height);
         this.invokeCreator.initGui();
         Keyboard.enableRepeatEvents(true);
@@ -92,6 +94,9 @@ public class CreateEntryMenu <K extends GuiScreen & ICreatorMenu, L extends IFol
     protected void keyTyped(final char typedChar, final int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
         this.invokeCreator.doKeyTyped(typedChar, keyCode);
+        if (keyCode == 28 || keyCode == 156) {
+            this.invokeCreator.handleActionPerformed(this.buttonList.stream().filter(btn -> btn.id == CreatorMenu.CREATION_ID).findFirst().get(), this);
+        }
         if (this.pathDisplay.isFocused() && keyCode == 203 || keyCode == 205 || GuiScreen.isKeyComboCtrlA(keyCode) || GuiScreen.isKeyComboCtrlC(keyCode)) {
             this.pathDisplay.textboxKeyTyped(typedChar, keyCode);
         }

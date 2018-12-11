@@ -99,7 +99,7 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
                 case ADDING:
                     this.serverList.addServerSave(this.saveData);
                     this.serverList.saveList();
-                    this.serverList.setSelectedSlotIndex(-1);
+                    this.serverList.setRelevantServer(-1);
                     break;
 
                 case EDITING:
@@ -109,7 +109,7 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
                     break;
 
                 case REMOVING:
-                    this.serverList.delete(this.serverList.getSelected());
+                    this.serverList.delete(this.serverList.getRelevantSelected());
                     break;
 
                 case DIRECT_CONNECTING:
@@ -130,7 +130,7 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
 
     @Override
     public void connectToSelected() {
-        final int selected = this.serverList.getSelected();
+        final int selected = this.serverList.getRelevantSelected();
         final ServerEntry entry = selected < 0 ? null : this.serverList.getListEntry(selected);
 
         if (entry != null) {
@@ -139,23 +139,6 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
             } else {
                 this.connect(entry.getServerData());
             }
-        }
-    }
-
-    @Override
-    public void selectServer(final int index) {
-        if (listInitialized) {
-            this.serverList.setSelectedSlotIndex(index);
-            this.buttonList.stream()
-                    .filter(btn -> ENABLED_BUTTONS.contains(btn.id))
-                    .forEach(btn -> {
-                        if (index == -1) {
-                            btn.enabled = false;
-                        }
-                        else {
-                            btn.enabled = true;
-                        }
-                    });
         }
     }
 
@@ -187,7 +170,7 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
             this.listInitialized = true;
             this.serverList = (ServerEntryList) list;
             this.serverList.loadList();
-            this.selectServer(-1);
+            this.selectRelevantServer(-1);
         }
     }
 
@@ -205,7 +188,23 @@ public class MultiplayerMenu extends GuiMultiplayer implements IMenuType {
     }
 
     public int getSelectedIndex() {
-        return this.serverList.getSelected();
+        return this.serverList.getRelevantSelected();
+    }
+
+    public void selectRelevantServer(final int index) {
+        if (listInitialized) {
+            this.serverList.setRelevantServer(index);
+            this.buttonList.stream()
+                    .filter(btn -> ENABLED_BUTTONS.contains(btn.id))
+                    .forEach(btn -> {
+                        if (index == -1) {
+                            btn.enabled = false;
+                        }
+                        else {
+                            btn.enabled = true;
+                        }
+                    });
+        }
     }
 
     private void connect(final ServerData server) {
