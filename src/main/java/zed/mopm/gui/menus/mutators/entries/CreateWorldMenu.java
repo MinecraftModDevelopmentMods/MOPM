@@ -150,7 +150,6 @@ public class CreateWorldMenu
      * Handles the action of the button pressed.
      * @param btn The button clicked on.
      * @param entryMenu The create entry menu that invoked this menu.
-     * @throws IOException Thrown if there is invalid input.
      */
     @Override
     public final void handleActionPerformed(
@@ -181,6 +180,7 @@ public class CreateWorldMenu
      *
      * @param typedChar The character of the key typed.
      * @param keyCode   The code of the key typed.
+     * @throws IOException Thrown when given invalid keyboard input.
      */
     @Override
     public final void doKeyTyped(
@@ -200,6 +200,7 @@ public class CreateWorldMenu
      * @param mouseX      The x location of the mouse click.
      * @param mouseY      The y location of the mouse click.
      * @param mouseButton The mouse button clicked.
+     * @throws IOException Thrown when given invalid mouse clicks.
      */
     @Override
     public final void doMouseClicked(
