@@ -8,71 +8,113 @@ import zed.mopm.util.MOPMLiterals;
 
 public class ServerSaveData {
 
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
-    //-----Constants:---------------------------------------------------------------------------------//
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Fields:--------------------------------------//
 
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
-    //-----Fields:------------------------------------------------------------------------------------//
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
-
+    /**
+     * Defines the actions that are being enacted on the
+     * server save data.
+     */
     private ServerDataStatus status = ServerDataStatus.NONE;
-    private ServerData data;
+    /**
+     * Contains the server save data such as the ip and the
+     * name of the server.
+     */
+    private ServerData saveData;
+    /**
+     * The location where the containing server entry is located.
+     */
     private String savePath;
 
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
-    //-----Constructors:------------------------------------------------------------------------------//
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----Constructors:--------------------------------//
 
-    public ServerSaveData(final ServerData data, final String savePath) {
-        this.data = data;
-        this.savePath = savePath;
+    /**
+     * Creates a new mopm server save data with the given vanilla
+     * save data and the containing save path in the directory list.
+     * @param data The vanilla server data.
+     * @param path The directory list location of the server entry.
+     */
+    public ServerSaveData(final ServerData data, final String path) {
+        this.saveData = data;
+        this.savePath = path;
     }
 
+    /**
+     * Makes a copy of another mopm server save data.
+     * @param copyFrom The server save data to copy from.
+     */
     public ServerSaveData(final ServerSaveData copyFrom) {
-        this.data = new ServerData("", "", false);
-        this.data.copyFrom(copyFrom.data);
+        this.saveData = new ServerData("", "", false);
+        this.saveData.copyFrom(copyFrom.saveData);
         this.savePath = copyFrom.savePath;
     }
 
+    /**
+     * Creates a default server save data with no name, no ip, and no
+     * directory path.
+     */
     public ServerSaveData() {
-        this.data = new ServerData("", "", false);
+        this.saveData = new ServerData("", "", false);
         this.savePath = "";
     }
 
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
-    //-----This:--------------------------------------------------------------------------------------//
-    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
+    //-----This:----------------------------------------//
 
-    public ServerData getServerData() {
-        return this.data;
+    /**
+     * @return Returns the vanilla save data that contains the server
+     * ip and name.
+     */
+    public final ServerData getServerData() {
+        return this.saveData;
     }
 
-    public String getSavePath() {
+    /**
+     * @return Returns the containing directory of the associated server entry.
+     */
+    public final String getSavePath() {
         return this.savePath;
     }
 
-    public ServerDataStatus getStatus() {
+    /**
+     * @return Returns the current action being enacted on the server save data.
+     */
+    public final ServerDataStatus getStatus() {
         return this.status;
     }
 
-    public NBTTagCompound getNBTSaveData() {
-        final NBTTagCompound nbt = this.data.getNBTCompound();
+    /**
+     * @return Returns the save nbt of the server save data.
+     */
+    public final NBTTagCompound getNBTSaveData() {
+        final NBTTagCompound nbt = this.saveData.getNBTCompound();
         nbt.setTag(MOPMLiterals.MOPM_SAVE, new NBTTagString(this.savePath));
         return nbt;
     }
 
-    public void setSavePath(final String path) {
+    /**
+     * Sets the directory path of where the server entry is located.
+     * @param path The new path location.
+     */
+    public final void setSavePath(final String path) {
         this.savePath = path;
     }
 
-    public void changeStatus(ServerDataStatus status) {
-        this.status = status;
+    /**
+     * Changes the status of the current action being enacted on the
+     * server save data.
+     * @param dataStatus The new status.
+     */
+    public final void changeStatus(final ServerDataStatus dataStatus) {
+        this.status = dataStatus;
     }
 
-    public void copyFrom(final ServerSaveData newSave) {
+    /**
+     * Copies the information of another server save data onto this
+     * server save data.
+     * @param newSave The server save data to copy from.
+     */
+    public final void copyFrom(final ServerSaveData newSave) {
         this.savePath = newSave.savePath;
-        this.data.copyFrom(newSave.getServerData());
-        this.data.serverMOTD = newSave.getServerData().serverMOTD;
+        this.saveData.copyFrom(newSave.getServerData());
+        this.saveData.serverMOTD = newSave.getServerData().serverMOTD;
     }
 }

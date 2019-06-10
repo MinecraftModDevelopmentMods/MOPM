@@ -1,11 +1,23 @@
 package zed.mopm.util;
 
-public class PathFormatter {
+import static zed.mopm.util.MOPMLiterals.BASE_DIR;
+import static zed.mopm.util.MOPMLiterals.MOPM_PATH_DELIM;
+
+public final class PathFormatter {
     private PathFormatter() { }
 
-    public static String ensurePathFormat(String path) {
-        if (path.startsWith(MOPMLiterals.BASE_DIR + MOPMLiterals.MOPM_PATH_DELIM)) {
-            path = path.substring((MOPMLiterals.BASE_DIR + MOPMLiterals.MOPM_PATH_DELIM).length());
+    /**
+     * Ensures that the path is formatted correctly.
+     * @param pathIn The path to check the format of.
+     * @return Returns a string with the proper path format.
+     */
+    public static String ensurePathFormat(final String pathIn) {
+        String path = pathIn;
+        if (path.startsWith(BASE_DIR + MOPM_PATH_DELIM)) {
+            path = path.substring(
+                    (BASE_DIR + MOPM_PATH_DELIM)
+                            .length()
+            );
         } else {
             path = "";
         }

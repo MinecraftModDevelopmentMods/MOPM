@@ -10,7 +10,13 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import zed.mopm.gui.events.EventMenuOpened;
 import zed.mopm.util.References;
 
-@Mod(modid = References.MODID, name = References.NAME, version = References.VERSION, certificateFingerprint = "@FINGERPRINT@", clientSideOnly = true)
+@Mod(
+        modid = References.MODID,
+        name = References.NAME,
+        version = References.VERSION,
+        certificateFingerprint = "@FINGERPRINT@",
+        clientSideOnly = true
+)
 public class ModRegistry {
 
     @Mod.EventHandler
