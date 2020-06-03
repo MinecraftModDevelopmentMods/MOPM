@@ -1,15 +1,13 @@
 package zed.mopm;
 
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import zed.mopm.gui.events.EventMenuOpened;
-import zed.mopm.util.References;
 
-@Mod("MOPM")
+import static zed.mopm.util.PrintUtils.LOG;
+
+@Mod("mopm")
 public class ModRegistry {
 
 	public ModRegistry() {
@@ -18,7 +16,7 @@ public class ModRegistry {
 	}
 
 	private void startClient(final FMLClientSetupEvent event) {
-		MinecraftForge.EVENT_BUS.register(EventMenuOpened.class);
-		EventMenuOpened.loadMenus(Minecraft.getInstance().currentScreen);
+		System.out.println("TEST");
+		LOG.debug("Hi: \u2514");
 	}
 }

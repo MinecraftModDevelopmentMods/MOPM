@@ -335,7 +335,7 @@ minecraft {
     client {
       workingDirectory project.file('run')
 
-      taskName "${project.name} Client"
+      taskName "${project.name}-Client"
 
       // Recommended logging data for a userdev environment
       property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -344,7 +344,7 @@ minecraft {
       property 'forge.logging.console.level', 'debug'
 
       mods {
-        examplemod {
+        mopm {
           source sourceSets.main
         }
       }
@@ -353,16 +353,16 @@ minecraft {
     server {
       workingDirectory project.file('run')
 
-      taskName "${project.name} Server"
+      taskName "${project.name}-Server"
 
       // Recommended logging data for a userdev environment
-      property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+      //property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
       // Recommended logging level for the console
       property 'forge.logging.console.level', 'debug'
 
       mods {
-        examplemod {
+        mopm {
           source sourceSets.main
         }
       }
@@ -411,7 +411,7 @@ jar {
     mainAttributes(
       'Maven-Artifact': "${project.group}:${project.archivesBaseName}:${project.version}",
       'Timestamp': System.currentTimeMillis(),
-      'Specification-Title': 'examplemod',
+      'Specification-Title': 'MOPM',
       'Specification-Vendor': 'mcmoddev',
       'Specification-Version': '1',
       'Implementation-Title': project.archivesBaseName,
@@ -467,7 +467,7 @@ task deobfJar(type: Jar) {
     mainAttributes(
       'Maven-Artifact': "${project.group}:${project.archivesBaseName}:${project.version}:deobf",
       'Timestamp': System.currentTimeMillis(),
-      'Specification-Title': 'examplemod',
+      'Specification-Title': 'MOPM',
       'Specification-Vendor': 'mcmoddev',
       'Specification-Version': '1',
       'Implementation-Title': project.name + '-deobf',
@@ -498,7 +498,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     mainAttributes(
       'Maven-Artifact': "${project.group}:${project.archivesBaseName}:${project.version}:sources",
       'Timestamp': System.currentTimeMillis(),
-      'Specification-Title': 'examplemod',
+      'Specification-Title': 'MOPM',
       'Specification-Vendor': 'mcmoddev',
       'Specification-Version': '1',
       'Implementation-Title': project.name + '-sources',
