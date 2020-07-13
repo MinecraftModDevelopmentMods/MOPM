@@ -1,31 +1,34 @@
 package zed.mopm.systems.vfs;
 
+import com.google.gson.*;
+import zed.mopm.util.JsonLiterals;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Directory {
 
 	/**
-	 * Contains the general information and description
-	 * details of this directory.
+	 * <p>Contains the general information and description
+	 * details of this directory.</p>
 	 */
 	private final DirectoryInfo directoryInfo;
 
 	/**
-	 * The sub-directories contained under the parent directory, this directory.
-	 * The parent directory is always the calling instance.
+	 * <p>The sub-directories contained under the parent directory, this directory.
+	 * The parent directory is always the calling instance.</p>
 	 */
 	private final List<Directory> directories;
 
 	/**
-	 * A file in the terminology of this program
+	 * <p>A file in the terminology of this program
 	 * is a World, Server, etc. Files are just something
-	 * a folder holds.
+	 * a folder holds.</p>
 	 */
 	private final List<TreeEntry> files;
 
 	public Directory(final DirectoryInfo info) {
-		this.directories = new ArrayList<>();
+		this.directories = new DirectoryList();
 		this.files = new ArrayList<>();
 		this.directoryInfo = info;
 	}
@@ -55,31 +58,21 @@ public class Directory {
 	}
 
 	/**
-	 * Indicator of if this directory is a leaf within the file system.
-	 * A directory is a leaf if it has no children.
-	 * @return
-	 * Returns true if this directory does not have children. <br>
-	 * Returns false if this directory has children.
-	 */
-	public boolean isLeaf() {
-		return this.directories.isEmpty();
-	}
-
-	/**
-	 * Creates a directory to this directory.
+	 * Creates a new directory and adds it to this directory.
 	 * @param name The name of the new directory.
+	 * @return Returns the new directory.
 	 */
-	public void createDirectory(final String name) {
+	public Directory createDirectory(final String name) {
 		int depth = this.directoryInfo.depth + 1;
-		int index = this.directories.size();
 		DirectoryInfo directory = new DirectoryInfo(
 			this.directoryInfo.getRootSystem(),
 			this,
 			name,
 			depth,
-			index
+			-1
 		);
-		directories.add(new Directory(directory));
+		this.directories.add(new Directory(directory));
+		return this.directories.get(directories.size() - 1);
 	}
 
 	/**
@@ -102,9 +95,6 @@ public class Directory {
 	 * @return Returns the instance of the directory that was removed.
 	 */
 	public Directory removeDirectory(final int index) {
-		for (int i = index + 1; i < this.directories.size(); i++) {
-			this.directories.get(i).directoryInfo.index -= 1;
-		}
 		final Directory removedDirectory = this.directories.remove(index);
 		final DirectoryTree directorySystem = this.directoryInfo.getRootSystem();
 		directorySystem.relocateAllEntries(removedDirectory, directorySystem.getRootDirectory());
@@ -158,13 +148,68 @@ public class Directory {
 	 * Returns false if this directory cannot be found in its parent's set of directories.
 	 */
 	public boolean relocateDirectory(final Directory toDirectory) {
-		if (this.directoryInfo.parentDirectory.removeDirectory(this) != null) {
+		if (!this.directoryInfo.getRootSystem().isAncestorOf(this, toDirectory)
+			&& this.directoryInfo.parentDirectory.removeDirectory(this) != null
+		) {
 			this.directoryInfo.depth = toDirectory.directoryInfo.depth + 1;
-			this.directoryInfo.index = toDirectory.directories.size();
+			this.directoryInfo.parentDirectory = toDirectory;
 			toDirectory.directories.add(this);
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Constructs a visual that represents a tree structure starting from this node.
+	 * The tree displays the names of subsequent nodes and the order of which they appear
+	 * in the subsequent tree.
+	 * @return Returns a string that visualizes the tree starting at this node.
+	 */
+	public String toVisualTree() {
+		final StringBuilder treeVisual = new StringBuilder();
+		this.toVisualTree(treeVisual, "", true);
+		return treeVisual.toString();
+	}
+
+	/**
+	 * Helper method to {@link Directory#toVisualTree()}. This method is responsible
+	 * for the tree construction logic.
+	 * @param treeVisual The builder that is storing the tree visual.
+	 * @param indent The level in which nodes are displayed on.
+	 * @param isLast Indicator if a node is the last of it's parent.
+	 */
+	private void toVisualTree(final StringBuilder treeVisual, String indent, final boolean isLast) {
+		treeVisual.append(indent);
+		if (isLast) {
+			treeVisual.append("\u2514\u2500 ");
+			indent += "   ";
+		}
+		else {
+			treeVisual.append("\u251C\u2500 ");
+			indent += "\u2502  ";
+		}
+		treeVisual.append(this.directoryInfo.getUniqueName()).append("\n");
+
+		for (final Directory directory : this.directories) {
+			boolean last = directory.directoryInfo.index == this.directories.size() - 1;
+			directory.toVisualTree(treeVisual, indent, last);
+		}
+	}
+
+	public String toJsonTree() {
+		final JsonObject jsonTree = new JsonObject();
+		this.toJsonTree(jsonTree);
+		return new GsonBuilder().setPrettyPrinting().create().toJson(jsonTree);
+	}
+
+	private void toJsonTree(final JsonObject jsonTree) {
+		jsonTree.addProperty(JsonLiterals.DIR_NAME, this.directoryInfo.name);
+		final JsonArray childList = new JsonArray();
+		for (final Directory directory : this.directories) {
+			childList.add(new JsonObject());
+			directory.toJsonTree(childList.get(directory.directoryInfo.index).getAsJsonObject());
+		}
+		jsonTree.add(JsonLiterals.DIR_CHILDREN, childList);
 	}
 
 	@Override

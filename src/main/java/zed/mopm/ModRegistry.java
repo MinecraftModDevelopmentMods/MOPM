@@ -4,8 +4,9 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import zed.mopm.systems.disk.SaveLoadManager;
 
-import static zed.mopm.util.PrintUtils.LOG;
+import java.io.IOException;
 
 @Mod("mopm")
 public class ModRegistry {
@@ -16,7 +17,10 @@ public class ModRegistry {
 	}
 
 	private void startClient(final FMLClientSetupEvent event) {
-		System.out.println("TEST");
-		LOG.debug("Hi: \u2514");
+		try {
+			SaveLoadManager.get().loadMOPM();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

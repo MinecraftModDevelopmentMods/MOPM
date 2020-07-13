@@ -1,6 +1,7 @@
 package zed.mopm.systems.vfs;
 
 import zed.mopm.util.ModLiterals;
+import zed.mopm.util.logger.PrintUtils;
 
 public class DirectoryTree {
 	private Directory rootDirectory;
@@ -45,7 +46,8 @@ public class DirectoryTree {
 		return null;
 	}
 
-	public Directory getDirectoryByIndices(final int... indices) {
+	public Directory getDirectoryByIndices(final int... indices)
+		throws IndexOutOfBoundsException {
 		Directory ret = rootDirectory;
 		for (int i : indices) {
 			ret = ret.getSubDirectories().get(i);
@@ -60,6 +62,33 @@ public class DirectoryTree {
 	 */
 	public void setCurrentDirectory(final Directory directory) {
 		this.currentDirectory = directory;
+	}
+
+	public boolean stepBack() {
+		if (this.currentDirectory.equals(this.rootDirectory)) {
+			return false;
+		}
+		this.currentDirectory =
+			this.currentDirectory.getDirectoryInfo().parentDirectory;
+		return true;
+	}
+
+	public Directory createAndStepInto(final String name) {
+		this.currentDirectory = this.currentDirectory.createDirectory(name);
+		return this.currentDirectory;
+	}
+
+	public boolean swapDirectories(final Directory swap, final Directory with) {
+		if (this.isAncestorOf(swap, with) || this.isAncestorOf(with, swap)) {
+			return false;
+		}
+
+		final DirectoryInfo swapInfo = swap.getDirectoryInfo();
+		final DirectoryInfo withInfo = with.getDirectoryInfo();
+		final int withIndex = withInfo.index;
+		swapInfo.parentDirectory.getSubDirectories().set(swapInfo.index, with);
+		withInfo.parentDirectory.getSubDirectories().set(withIndex, swap);
+		return true;
 	}
 
 	/**
@@ -94,47 +123,59 @@ public class DirectoryTree {
 		return false;
 	}
 
-	@Override
-	public String toString() {
-		return "";
-	}
-
 	public static void main(final String[] args) {
 		DirectoryTree tree = new DirectoryTree();
-		TreeEntry<String> entry = new TreeEntry<>("Test", null);
-		TreeEntry<Integer> entry1 = new TreeEntry<>(10, null);
-		tree.currentDirectory.createDirectory("1:1");
-		tree.currentDirectory.createDirectory("1:2");
-		tree.currentDirectory.createDirectory("1:3");
-		tree.currentDirectory.createDirectory("1:4");
-		tree.setCurrentDirectory(tree.currentDirectory.getSubDirectories().get(1));
-		tree.currentDirectory.createDirectory("2:1");
-		tree.currentDirectory.createDirectory("2:2");
-		tree.currentDirectory.createDirectory("2:3");
-		tree.currentDirectory.createDirectory("2:4");
-		tree.setCurrentDirectory(tree.currentDirectory.getSubDirectories().get(2));
-		tree.currentDirectory.createDirectory("3:1");
-		tree.currentDirectory.createDirectory("3:2");
-		tree.currentDirectory.createDirectory("3:3");
-		tree.currentDirectory.createDirectory("3:4");
-		tree.setCurrentDirectory(tree.currentDirectory.getSubDirectories().get(3));
-		tree.currentDirectory.createDirectory("FINAL!");
-		System.out.println("Pathing to: " + tree.getDirectoryByIndices(1, 2, 3, 0).getDirectoryInfo().name);
-		/* root
-		 * ┬
-		 * ├─ 1:1
-		 * ├─ 1:2
-		 * │  ├─ 2:1
-		 * │  ├─ 2:2
-		 * │  ├─ 2:3
-		 * │  │  ├─ 3:1
-		 * │  │  ├─ 3:2
-		 * │  │  ├─ 3:3
-		 * │  │  └─ 3:4
-		 * │  │     └─ FINAL!
-		 * │  └─ 2:4
-		 * ├─ 1:3
-		 * └─ 1:4
-		 */
+		Directory d11 = tree.rootDirectory.createDirectory("1:1");
+		Directory d12 = tree.rootDirectory.createDirectory("1:2");
+		Directory d13 = tree.rootDirectory.createDirectory("1:3");
+		Directory d21 = d12.createDirectory("2:1");
+		Directory d31 = d21.createDirectory("3:1");
+		Directory d32 = d21.createDirectory("3:2");
+		Directory d33 = d21.createDirectory("3:3");
+		Directory d22 = d12.createDirectory("2:2");
+		Directory d311 = d22.createDirectory("3:1:1");
+		Directory d322 = d22.createDirectory("3:2:2");
+		Directory d333 = d22.createDirectory("3:3:3");
+		Directory d344 = d22.createDirectory("3:4:4");
+		Directory d41 = d333.createDirectory("4:1");
+		Directory d51 = d41.createDirectory("5:1");
+		Directory d61 = d51.createDirectory("6:1");
+		Directory d71 = d61.createDirectory("7:1");
+		Directory d81 = d71.createDirectory("8:1");
+		Directory d82 = d71.createDirectory("8:2");
+
+		System.out.println("Printing JSON: ");
+		PrintUtils.println(tree.rootDirectory.toJsonTree(), "UTF8");
+
+		System.out.println("Initial: ");
+		PrintUtils.println(tree.rootDirectory.toVisualTree(), "UTF8");
+
+		System.out.println("Relocating 2:2 under 3:3: ");
+		d22.relocateDirectory(d33);
+		PrintUtils.println(tree.rootDirectory.toVisualTree(), "UTF8");
+
+		System.out.println("Same parent swap 1:1 w/ 1:2: ");
+		tree.swapDirectories(d11, d12);
+		PrintUtils.println(tree.rootDirectory.toVisualTree(), "UTF8");
+
+		System.out.println("Cross tree swap 1:3 w/ 8:2: ");
+		tree.swapDirectories(d13, d82);
+		PrintUtils.println(tree.rootDirectory.toVisualTree(), "UTF8");
+
+		System.out.println("Ancestor swap 3:3:3 w/ 4:1: ");
+		if (!tree.swapDirectories(d333, d41)) {
+			System.out.println("Unable to swap: 3:3:3 is an ancestor of 4:1");
+		}
+		if (!tree.swapDirectories(d41, d333)) {
+			System.out.println("Unable to swap: 3:3:3 is an ancestor of 4:1");
+		}
+		PrintUtils.println(tree.rootDirectory.toVisualTree(), "UTF8");
+
+		System.out.println("Renaming 4:1 to HELLO WORLD!: ");
+		d41.renameDirectory("HELLO WORLD!");
+		PrintUtils.println(tree.rootDirectory.toVisualTree(), "UTF8");
+
+		System.out.println("Path to root: " + tree.rootDirectory.getDirectoryInfo().getPath(true));
+		System.out.println("Path to Hello World: " + d41.getDirectoryInfo().getPath(true));
 	}
 }
